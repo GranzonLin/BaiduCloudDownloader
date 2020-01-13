@@ -1,12 +1,10 @@
 // ==UserScript==
-// @name              百度网盘直链下载助手
-// @namespace         https://github.com/syhyz1990/baiduyun
-// @version           3.0.1
-// @icon              https://www.baiduyun.wiki/48x48.png
-// @description       【百度网盘直链下载助手】是一款免客户端获取百度网盘文件真实下载地址的油猴插件，支持Windows，Mac，Linux，Android等多平台，可使用IDM，XDown等多线程加速工具加速下载，支持远程下载，告别下载限速问题。
-// @author            syhyz1990
-// @license           MIT
-// @supportURL        https://github.com/syhyz1990/baiduyun
+// @name              百度网盘直链下载器
+// @namespace         https://https://github.com/u0966537/BaiduCloudDownloader
+// @version           1.0
+// @description       【百度网盘直链下载器】
+// @author            Junjun He
+// @supportURL        https://https://github.com/u0966537/BaiduCloudDownloader
 // @match             *://pan.baidu.com/disk/home*
 // @match             *://yun.baidu.com/disk/home*
 // @match             *://pan.baidu.com/s/*
@@ -43,7 +41,8 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
         e = e || "", t = t || "", i = i || "", console.group("[百度网盘直链下载助手]"), console.log(e, t, i), console.groupEnd();
     }
 
-    function i(e, i, n) {
+    // BDUSS
+    function aria_download(e, i, n) {
         a = "GRMRm8wTmNlZWdMNG5abjFQSlBxNHluYU05d0JpWW5pYk1QZmk3c1h-TjhLVUplRUFBQUFBJCQAAAAAAAAAAAEAAABRRqExeDHO9MTqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHycGl58nBpee";
         return  'aria2c "' + e + '" --out "' + i + '" --header "User-Agent: ' + n + '" --header "Cookie: BDUSS=' + a + '"';
     }
@@ -343,7 +342,7 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
                 });
             }
             if (-1 != i.indexOf("aria")) {
-                if (de = R(n), a = '请先安装 <a  href="https://www.baiduyun.wiki/zh-cn/assistant.html">网盘万能助手</a> 请将链接复制到支持Aria的下载器中, 推荐使用 <a href="http://pan.baiduyun.wiki/down">XDown</a>', 0 === de.length) return void swal("没有链接可以显示，不要选中文件夹！");
+                if (de = R(n), a = '请先安装 <a  href="https://www.baiduyun.wiki/zh-cn/assistant.html">网盘万能助手</a> 请将链接复制到支持Aria的下载器中, 推荐使用 <a href="http://pan.baiduyun.wiki/down">XDown</a>。', 0 === de.length) return void swal("没有链接可以显示，不要选中文件夹！");
                 ge.open({title: "Aria链接", type: "batchAria", list: de, tip: a, showcopy: !0});
             }
             if (-1 != i.indexOf("rpc")) {
@@ -620,15 +619,14 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
                 t = $('<a class="g-button g-button-blue" style="width: 114px;" data-button-id="b200" data-button-index="200" href="javascript:;"></a>'),
                 i = $('<span class="g-button-right"><em class="icon icon-speed" title="百度网盘下载助手"></em><span class="text" style="width: 60px;">下载助手</span></span>'),
                 n = $('<span class="menu" style="width:auto;z-index:41"></span>'),
-                o = $('<a data-menu-id="b-menu207" class="g-button-menu" href="javascript:;">保存到网盘</a>'),
-                l = $('<a data-menu-id="b-menu207" class="g-button-menu" href="javascript:;" style="opacity: 0.8;">自定义保存路径</a>'),
+                
                 r = $('<a data-menu-id="b-menu208" class="g-button-menu" href="javascript:;" data-type="down">显示链接</a>'),
                 d = $('<a data-menu-id="b-menu208" class="g-button-menu" href="javascript:;">显示Aria链接</a>'),
-                c = $('<a data-menu-id="b-menu208" class="g-button-menu" href="javascript:;" data-type="rpc">导出到RPC</a>'),
+                o = $('<a data-menu-id="b-menu207" class="g-button-menu" href="javascript:;">保存到网盘</a>'),
                 p = $('<a data-menu-id="b-menu209" style="color: #e85653;font-weight: 700;" class="g-button-menu" href="javascript:;">Ver ' + h + "</a>");
-            n.append(r).append(d).append(c).append(o).append(p), t.append(i), e.append(t).append(n), e.hover(function () {
+            n.append(r).append(d).append(o).append(p), t.append(i), e.append(t).append(n), e.hover(function () {
                 e.toggleClass("button-open");
-            }), o.click(_), l.click(A), c.click(J), r.click(J), d.click(S), p.click(k), $("div.module-share-top-bar div.bar div.x-button-box").append(e);
+            }), o.click(_), r.click(J), d.click(S), p.click(github_link), $("div.module-share-top-bar div.bar div.x-button-box").append(e);
         }
 
         function y() {
@@ -642,8 +640,10 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
             });
         }
 
-        function k() {
-            GM_openInTab("https://www.baiduyun.wiki/install.html", {active: !0});
+
+        // This method opens the github URL in a new tab.
+        function github_link() {
+            GM_openInTab("https://github.com/u0966537/BaiduCloudDownloader", {active: !0});
         }
 
         function _() {
@@ -702,10 +702,10 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
                     if (112 == e.errno) return swal("页面过期，请刷新重试"), !1;
                     if (0 === e.errno) {
                         be.open({
-                            title: "下载链接（仅显示文件链接）",
+                            title: "文件的Aria下载链接",
                             type: "shareAriaLink",
                             list: e.list,
-                            tip: '请先安装 <a  href="https://www.baiduyun.wiki/zh-cn/assistant.html">网盘万能助手</a> 请将链接复制到支持Aria的下载器中, 推荐使用 <a  href="http://pan.baiduyun.wiki/down">XDown</a>',
+                            tip: '请先阅读 <a  href="https://github.com/u0966537/BaiduCloudDownloader">使用说明/攻略</a>。请将Aria链接到复制到支持的下载器中下载，推荐使用 <a  href="http://pan.baiduyun.wiki/down">XDown</a>',
                             showcopy: !0
                         });
                     } else swal(v.fail);
@@ -1131,7 +1131,7 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
             })), "batch" != e.type && "batchAria" != e.type && "batchAriaRPC" != e.type || (t = e.list, $("div.dialog-header h3 span.dialog-title", o).text(e.title), $.each(e.list, function (t, n) {
                 var a = void 0;
                 if ("batchAria" == e.type) {
-                    var l = i(n.downloadlink, n.filename, y);
+                    var l = aria_download(n.downloadlink, n.filename, y);
                     a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + n.filename + '">' + n.filename + '</div><span>：</span><a href="javascript:;" class="aria2c-link">' + l + "</a></div>");
                 }
                 "batch" == e.type && (a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + n.filename + '">' + n.filename + '</div><span>：</span><a href="' + n.downloadlink + '">' + n.downloadlink + "</a></div>")), "batchAriaRPC" == e.type && (a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + n.filename + '">' + n.filename + '</div><span>：</span><button class="aria-rpc" data-link="' + n.downloadlink + '" data-filename="' + n.filename + '">点击发送到Aria</button></div>')), $("div.dialog-body", o).append(a);
@@ -1147,7 +1147,7 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
                 }
             })), "shareAriaLink" == e.type && (t = e.list, $("div.dialog-header h3 span.dialog-title", o).text(e.title), $.each(e.list, function (e, t) {
                 if (1 != t.isdir) {
-                    var n = i(t.dlink, t.server_filename),
+                    var n = aria_download(t.dlink, t.server_filename),
                         a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + t.server_filename + '">' + t.server_filename + '</div><span>：</span><a href="javasctipt:void(0)" class="aria2c-link">' + n + "</a></div>");
                     $("div.dialog-body", o).append(a);
                 }
@@ -1182,13 +1182,13 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
                 "batch" == a.type && $.each(t, function (i, n) {
                     "error" != n.downloadlink && (i == t.length - 1 ? e += n.downloadlink : e += n.downloadlink + "\r\n");
                 }), "batchAria" == a.type && $.each(t, function (n, a) {
-                    "error" != a.downloadlink && (n == t.length - 1 ? e += i(a.downloadlink, a.filename, y) : e += i(a.downloadlink, a.filename, y) + "\r\n");
+                    "error" != a.downloadlink && (n == t.length - 1 ? e += aria_download(a.downloadlink, a.filename, y) : e += aria_download(a.downloadlink, a.filename, y) + "\r\n");
                 }), "rpc" == a.type && $.each(t, function (i, n) {
                     "error" != n.downloadlink && (i == t.length - 1 ? e += n.downloadlink : e += n.downloadlink + "\r\n");
                 }), "shareLink" == a.type && $.each(t, function (i, n) {
                     "error" != n.dlink && (i == t.length - 1 ? e += n.dlink : e += n.dlink + "\r\n");
                 }), "shareAriaLink" == a.type && $.each(t, function (n, a) {
-                    "error" != a.dlink && (n == t.length - 1 ? e += i(a.dlink, a.server_filename) : e += i(a.dlink, a.server_filename) + "\r\n");
+                    "error" != a.dlink && (n == t.length - 1 ? e += aria_download(a.dlink, a.server_filename) : e += aria_download(a.dlink, a.server_filename) + "\r\n");
                 }), GM_setClipboard(e, "text"), "" != e ? swal("已将链接复制到剪贴板！") : swal("复制失败，请手动复制！");
             }), v.click(function () {
                 var e = $("div.dialog-body textarea[name=dialog-textarea]", o);
@@ -1313,7 +1313,7 @@ var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator 
         };
     }
 
-    var h = "3.0.1", f = {
+    var h = "1.0", f = {
             list: "zJMtAEb",
             grid: "fyQgAEb",
             "list-grid-switch": "auiaQNyn",
