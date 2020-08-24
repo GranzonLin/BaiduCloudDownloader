@@ -1,1352 +1,2419 @@
 // ==UserScript==
-// @name              百度网盘直链下载器
-// @namespace         https://https://github.com/u0966537/BaiduCloudDownloader
-// @version           1.0
-// @description       【百度网盘直链下载器】
-// @author            Junjun He
-// @supportURL        https://https://github.com/u0966537/BaiduCloudDownloader
-// @match             *://pan.baidu.com/disk/home*
-// @match             *://yun.baidu.com/disk/home*
-// @match             *://pan.baidu.com/s/*
-// @match             *://yun.baidu.com/s/*
-// @match             *://pan.baidu.com/share/*
-// @match             *://yun.baidu.com/share/*
-// @require           https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js
-// @require           https://cdn.bootcss.com/sweetalert/2.1.2/sweetalert.min.js
-// @connect           baidu.com
-// @connect           baidupcs.com
-// @connect           *
-// @run-at            document-idle
-// @grant             unsafeWindow
-// @grant             GM_xmlhttpRequest
-// @grant             GM_setClipboard
-// @grant             GM_setValue
-// @grant             GM_getValue
-// @grant             GM_deleteValue
-// @grant             GM_openInTab
-// @grant             GM_registerMenuCommand
-// @grant             GM_unregisterMenuCommand
+// @name         Baidu Cloud Downloader
+// @namespace    https://github.com/u0966537/BaiduCloudDownloader
+// @version      2.0.1
+// @icon         data:image/jpeg;base64,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
+// @author       Chase He
+// @description  功能有：[1]百度网盘文件提取密码 [2]百度网盘生成下载链接
+// @match        *://pan.baidu.com/*
+// @match        *://yun.baidu.com/*
+// @connect      newday.me
+// @connect      likestyle.cn
+// @require      https://cdn.staticfile.org/jquery/3.5.0/jquery.min.js
+// @require      https://cdn.staticfile.org/dompurify/2.0.10/purify.min.js
+// @require      https://cdn.staticfile.org/snap.svg/0.5.1/snap.svg-min.js
+// @run-at       document-start
+// @grant        unsafeWindow
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_listValues
+// @grant        GM_openInTab
+// @grant        GM_notification
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-'use strict';
+(function () {
+  "use strict";
 
-"use strict";
-var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (e) {
-    return typeof e;
-} : function (e) {
-    return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
-};
-!function () {
-    function e(e, t, i) {
-        e = e || "", t = t || "", i = i || "", console.group("[百度网盘直链下载助手]"), console.log(e, t, i), console.groupEnd();
+  var manifest = {
+    name: "wpzs",
+    urls: {},
+    apis: {
+      version: "https://api.newday.me/share/disk/version",
+      origin: "https://api.newday.me/share/disk/origin",
+      query: "https://api.newday.me/share/disk/query",
+      store: "https://api.newday.me/share/disk/store",
+      lists: "https://api.newday.me/share/disk/lists",
+      delete: "https://api.newday.me/share/disk/delete",
+    },
+    logger_level: 3,
+  };
+
+  var container = (function () {
+    var obj = {
+      defines: {},
+      modules: {},
+    };
+
+    obj.define = function (name, requires, callback) {
+      name = obj.processName(name);
+      obj.defines[name] = {
+        requires: requires,
+        callback: callback,
+      };
+    };
+
+    obj.require = function (name, cache) {
+      if (typeof cache == "undefined") {
+        cache = true;
+      }
+
+      name = obj.processName(name);
+      if (cache && obj.modules.hasOwnProperty(name)) {
+        return obj.modules[name];
+      } else if (obj.defines.hasOwnProperty(name)) {
+        var requires = obj.defines[name].requires;
+        var callback = obj.defines[name].callback;
+
+        var module = obj.use(requires, callback);
+        cache && obj.register(name, module);
+        return module;
+      }
+    };
+
+    obj.use = function (requires, callback) {
+      var module = {
+        exports: undefined,
+      };
+      var params = obj.buildParams(requires, module);
+      var result = callback.apply(this, params);
+      if (typeof result != "undefined") {
+        return result;
+      } else {
+        return module.exports;
+      }
+    };
+
+    obj.register = function (name, module) {
+      name = obj.processName(name);
+      obj.modules[name] = module;
+    };
+
+    obj.buildParams = function (requires, module) {
+      var params = [];
+      requires.forEach(function (name) {
+        params.push(obj.require(name));
+      });
+      params.push(obj.require);
+      params.push(module.exports);
+      params.push(module);
+      return params;
+    };
+
+    obj.processName = function (name) {
+      return name.toLowerCase();
+    };
+
+    return {
+      define: obj.define,
+      use: obj.use,
+      register: obj.register,
+      modules: obj.modules,
+    };
+  })();
+
+  container.define("gm", [], function () {
+    var obj = {};
+
+    obj.ready = function (callback) {
+      if (typeof GM_getValue != "undefined") {
+        callback && callback();
+      } else {
+        setTimeout(function () {
+          obj.ready(callback);
+        }, 100);
+      }
+    };
+
+    return obj;
+  });
+
+  /** common **/
+  container.define("gmDao", [], function () {
+    var obj = {
+      items: {},
+    };
+
+    obj.get = function (name) {
+      return GM_getValue(name);
+    };
+
+    obj.getBatch = function (names) {
+      var items = {};
+      names.forEach(function (name) {
+        items[name] = obj.get(name);
+      });
+      return items;
+    };
+
+    obj.getAll = function () {
+      return obj.getBatch(GM_listValues());
+    };
+
+    obj.set = function (name, item) {
+      GM_setValue(name, item);
+    };
+
+    obj.setBatch = function (items) {
+      for (var name in items) {
+        obj.set(name, items[name]);
+      }
+    };
+
+    obj.setAll = function (items) {
+      var names = GM_listValues();
+      names.forEach(function (name) {
+        if (!items.hasOwnProperty(name)) {
+          obj.remove(name);
+        }
+      });
+      obj.setBatch(items);
+    };
+
+    obj.remove = function (name) {
+      GM_deleteValue(name);
+    };
+
+    obj.removeBatch = function (names) {
+      names.forEach(function (name) {
+        obj.remove(name);
+      });
+    };
+
+    obj.removeAll = function () {
+      obj.removeBatch(GM_listValues());
+    };
+
+    return obj;
+  });
+
+  container.define("ScopeDao", [], function () {
+    return function (dao, scope) {
+      var obj = {
+        items: {},
+      };
+
+      obj.get = function (name) {
+        return obj.items[name];
+      };
+
+      obj.getBatch = function (names) {
+        var items = {};
+        names.forEach(function (name) {
+          if (obj.items.hasOwnProperty(name)) {
+            items[name] = obj.items[name];
+          }
+        });
+        return items;
+      };
+
+      obj.getAll = function () {
+        return obj.items;
+      };
+
+      obj.set = function (name, item) {
+        obj.items[name] = item;
+
+        obj.sync();
+      };
+
+      obj.setBatch = function (items) {
+        obj.items = Object.assign(obj.items, items);
+
+        obj.sync();
+      };
+
+      obj.setAll = function (items) {
+        obj.items = Object.assign({}, items);
+
+        obj.sync();
+      };
+
+      obj.remove = function (name) {
+        delete obj.items[name];
+
+        obj.sync();
+      };
+
+      obj.removeBatch = function (names) {
+        names.forEach(function (name) {
+          delete obj.items[name];
+        });
+
+        obj.sync();
+      };
+
+      obj.removeAll = function () {
+        obj.items = {};
+
+        obj.getDao().remove(obj.getScope());
+      };
+
+      obj.init = function () {
+        var items = obj.getDao().get(obj.getScope());
+        if (items instanceof Object) {
+          obj.items = items;
+        }
+      };
+
+      obj.sync = function () {
+        obj.getDao().set(obj.getScope(), obj.items);
+      };
+
+      obj.getDao = function () {
+        return dao;
+      };
+
+      obj.getScope = function () {
+        return scope;
+      };
+
+      return obj.init(), obj;
+    };
+  });
+
+  container.define("config", ["factory"], function (factory) {
+    var obj = {};
+
+    obj.getConfig = function (name) {
+      return obj.getDao().get(name);
+    };
+
+    obj.setConfig = function (name, value) {
+      obj.getDao().set(name, value);
+    };
+
+    obj.getAll = function () {
+      return obj.getDao().getAll();
+    };
+
+    obj.getDao = function () {
+      return factory.getConfigDao();
+    };
+
+    return obj;
+  });
+
+  container.define("storage", ["factory"], function (factory) {
+    var obj = {};
+
+    obj.getValue = function (name) {
+      return obj.getDao().get(name);
+    };
+
+    obj.setValue = function (name, value) {
+      obj.getDao().set(name, value);
+    };
+
+    obj.getAll = function () {
+      return obj.getDao().getAll();
+    };
+
+    obj.getDao = function () {
+      return factory.getStorageDao();
+    };
+
+    return obj;
+  });
+
+  container.define("option", ["config", "constant"], function (
+    config,
+    constant
+  ) {
+    var obj = {
+      name: "option",
+      constant: constant.option,
+    };
+
+    obj.isOptionActive = function (item) {
+      var name = item.name;
+      var option = obj.getOption();
+      return option.indexOf(name) >= 0 ? true : false;
+    };
+
+    obj.setOptionActive = function (item) {
+      var name = item.name;
+      var option = obj.getOption();
+      if (option.indexOf(name) < 0) {
+        option.push(name);
+        obj.setOption(option);
+      }
+    };
+
+    obj.setOptionUnActive = function (item) {
+      var name = item.name;
+      var option = obj.getOption();
+      var index = option.indexOf(name);
+      if (index >= 0) {
+        delete option[index];
+        obj.setOption(option);
+      }
+    };
+
+    obj.getOption = function () {
+      var option = [];
+      var optionList = obj.getOptionList();
+      Object.values(obj.constant).forEach(function (item) {
+        var name = item.name;
+        if (optionList.hasOwnProperty(name)) {
+          if (optionList[name] != "no") {
+            option.push(name);
+          }
+        } else if (item.value != "no") {
+          option.push(name);
+        }
+      });
+      return option;
+    };
+
+    obj.setOption = function (option) {
+      var optionList = {};
+      Object.values(obj.constant).forEach(function (item) {
+        var name = item.name;
+        if (option.indexOf(name) >= 0) {
+          optionList[name] = "yes";
+        } else {
+          optionList[name] = "no";
+        }
+      });
+      obj.setOptionList(optionList);
+    };
+
+    obj.getOptionList = function () {
+      var optionList = config.getConfig(obj.name);
+      return optionList ? optionList : {};
+    };
+
+    obj.setOptionList = function (optionList) {
+      config.setConfig(obj.name, optionList);
+    };
+
+    return obj;
+  });
+
+  container.define("manifest", [], function () {
+    var obj = {
+      manifest: manifest,
+    };
+
+    obj.getItem = function (name) {
+      return obj.manifest[name];
+    };
+
+    obj.getManifest = function () {
+      return obj.manifest;
+    };
+
+    obj.getName = function () {
+      return obj.getItem("name");
+    };
+
+    obj.getAppName = function () {
+      return obj.getItem("app_name");
+    };
+
+    obj.getUrl = function (name) {
+      var urls = obj.getItem("urls");
+      urls instanceof Object || (urls = {});
+      return urls[name];
+    };
+
+    obj.getApi = function (name) {
+      var apis = obj.getItem("apis");
+      apis instanceof Object || (apis = {});
+      return apis[name];
+    };
+
+    return obj;
+  });
+
+  container.define("env", ["config", "manifest"], function (config, manifest) {
+    var obj = {
+      modes: {
+        ADDON: "addon",
+        SCRIPT: "script",
+      },
+      browsers: {
+        FIREFOX: "firefox",
+        EDG: "edg",
+        EDGE: "edge",
+        BAIDU: "baidu",
+        LIEBAO: "liebao",
+        UC: "uc",
+        QQ: "qq",
+        SOGOU: "sogou",
+        OPERA: "opera",
+        MAXTHON: "maxthon",
+        IE2345: "2345",
+        SE360: "360",
+        CHROME: "chrome",
+        SAFIRI: "safari",
+        OTHER: "other",
+      },
+    };
+
+    obj.getName = function () {
+      return manifest.getName();
+    };
+
+    obj.getMode = function () {
+      if (GM_info.mode) {
+        return GM_info.mode;
+      } else {
+        return obj.modes.SCRIPT;
+      }
+    };
+
+    obj.getAid = function () {
+      if (GM_info.scriptHandler) {
+        return GM_info.scriptHandler.toLowerCase();
+      } else {
+        return "unknown";
+      }
+    };
+
+    obj.getUid = function () {
+      var uid = config.getConfig("uid");
+      if (!uid) {
+        uid = obj.randString(32);
+        config.setConfig("uid", uid);
+      }
+      return uid;
+    };
+
+    obj.getBrowser = function () {
+      if (!obj._browser) {
+        obj._browser = obj.matchBrowserType(navigator.userAgent);
+      }
+      return obj._browser;
+    };
+
+    obj.getVersion = function () {
+      return GM_info.script.version;
+    };
+
+    obj.getEdition = function () {
+      return GM_info.version;
+    };
+
+    obj.getInfo = function () {
+      return {
+        mode: obj.getMode(),
+        aid: obj.getAid(),
+        uid: obj.getUid(),
+        browser: obj.getBrowser(),
+        version: obj.getVersion(),
+        edition: obj.getEdition(),
+      };
+    };
+
+    obj.matchBrowserType = function (userAgent) {
+      var browser = obj.browsers.OTHER;
+      userAgent = userAgent.toLowerCase();
+
+      if (userAgent.match(/firefox/) != null) {
+        browser = obj.browsers.FIREFOX;
+      } else if (userAgent.match(/edge/) != null) {
+        browser = obj.browsers.EDGE;
+      } else if (userAgent.match(/edg/) != null) {
+        browser = obj.browsers.EDG;
+      } else if (userAgent.match(/bidubrowser/) != null) {
+        browser = obj.browsers.BAIDU;
+      } else if (userAgent.match(/lbbrowser/) != null) {
+        browser = obj.browsers.LIEBAO;
+      } else if (userAgent.match(/ubrowser/) != null) {
+        browser = obj.browsers.UC;
+      } else if (userAgent.match(/qqbrowse/) != null) {
+        browser = obj.browsers.QQ;
+      } else if (userAgent.match(/metasr/) != null) {
+        browser = obj.browsers.SOGOU;
+      } else if (userAgent.match(/opr/) != null) {
+        browser = obj.browsers.OPERA;
+      } else if (userAgent.match(/maxthon/) != null) {
+        browser = obj.browsers.MAXTHON;
+      } else if (userAgent.match(/2345explorer/) != null) {
+        browser = obj.browsers.IE2345;
+      } else if (userAgent.match(/chrome/) != null) {
+        if (navigator.mimeTypes.length > 10) {
+          browser = obj.browsers.SE360;
+        } else {
+          browser = obj.browsers.CHROME;
+        }
+      } else if (userAgent.match(/safari/) != null) {
+        browser = obj.browsers.SAFIRI;
+      }
+      return browser;
+    };
+
+    obj.randString = function (length) {
+      var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+      var text = "";
+      for (var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return text;
+    };
+
+    return obj;
+  });
+
+  container.define("http", [], function () {
+    var obj = {};
+
+    obj.ajax = function (option) {
+      var details = {
+        method: option.type,
+        url: option.url,
+        responseType: option.dataType,
+        onload: function (result) {
+          if (!result.status || parseInt(result.status / 100) == 2) {
+            option.success && option.success(result.response);
+          } else {
+            option.error && option.error("");
+          }
+        },
+        onerror: function (result) {
+          option.error && option.error(result.error);
+        },
+      };
+
+      // 提交数据
+      if (option.data instanceof Object) {
+        if (option.data instanceof FormData) {
+          details.data = option.data;
+        } else {
+          var formData = new FormData();
+          for (var i in option.data) {
+            formData.append(i, option.data[i]);
+          }
+          details.data = formData;
+        }
+      }
+
+      // 自定义头
+      if (option.headers) {
+        details.headers = option.headers;
+      }
+
+      // 超时
+      if (option.timeout) {
+        details.timeout = option.timeout;
+      }
+
+      GM_xmlhttpRequest(details);
+    };
+
+    return obj;
+  });
+
+  container.define("router", [], function () {
+    var obj = {};
+
+    obj.getUrl = function () {
+      return location.href;
+    };
+
+    obj.goUrl = function (url) {
+      location.href = url;
+    };
+
+    obj.openUrl = function (url) {
+      window.open(url);
+    };
+
+    obj.openTab = function (url, active) {
+      GM_openInTab(url, !active);
+    };
+
+    obj.jumpLink = function (jumpUrl, jumpMode) {
+      switch (jumpMode) {
+        case 9:
+          // self
+          obj.goUrl(jumpUrl);
+          break;
+        case 6:
+          // new
+          obj.openUrl(jumpUrl);
+          break;
+        case 3:
+          // new & not active
+          obj.openTab(jumpUrl, false);
+          break;
+        case 1:
+          // new & active
+          obj.openTab(jumpUrl, true);
+          break;
+      }
+    };
+
+    obj.getUrlParam = function (name) {
+      var param = obj.parseUrlParam(obj.getUrl());
+      if (name) {
+        return param.hasOwnProperty(name) ? param[name] : null;
+      } else {
+        return param;
+      }
+    };
+
+    obj.parseUrlParam = function (url) {
+      if (url.indexOf("?")) {
+        url = url.split("?")[1];
+      }
+      var reg = /([^=&\s]+)[=\s]*([^=&\s]*)/g;
+      var obj = {};
+      while (reg.exec(url)) {
+        obj[RegExp.$1] = RegExp.$2;
+      }
+      return obj;
+    };
+
+    return obj;
+  });
+
+  container.define("logger", ["env", "manifest"], function (env, manifest) {
+    var obj = {
+      constant: {
+        DEBUG: 0,
+        INFO: 1,
+        WARN: 2,
+        ERROR: 3,
+        NONE: 4,
+      },
+    };
+
+    obj.debug = function (message) {
+      obj.log(message, obj.constant.DEBUG);
+    };
+
+    obj.info = function (message) {
+      obj.log(message, obj.constant.INFO);
+    };
+
+    obj.warn = function (message) {
+      obj.log(message, obj.constant.WARN);
+    };
+
+    obj.error = function (message) {
+      obj.log(message, obj.constant.ERROR);
+    };
+
+    obj.log = function (message, level) {
+      if (level < manifest.getItem("logger_level")) {
+        return false;
+      }
+
+      console.group("[" + env.getName() + "]" + env.getMode());
+      console.log(message);
+      console.groupEnd();
+    };
+
+    return obj;
+  });
+
+  container.define("meta", ["env", "$"], function (env, $) {
+    var obj = {};
+
+    obj.existMeta = function (name) {
+      name = obj.processName(name);
+      if ($("meta[name='" + name + "']").length) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    obj.appendMeta = function (name, content) {
+      name = obj.processName(name);
+      content || (content = "on");
+      $('<meta name="' + name + '" content="on">').appendTo($("head"));
+    };
+
+    obj.processName = function (name) {
+      return env.getName() + "::" + name;
+    };
+
+    return obj;
+  });
+
+  container.define("unsafeWindow", [], function () {
+    if (typeof unsafeWindow == "undefined") {
+      return window;
+    } else {
+      return unsafeWindow;
     }
+  });
 
-    // BDUSS
-    function aria_download(e, i, n) {
-        a = "GRMRm8wTmNlZWdMNG5abjFQSlBxNHluYU05d0JpWW5pYk1QZmk3c1h-TjhLVUplRUFBQUFBJCQAAAAAAAAAAAEAAABRRqExeDHO9MTqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHycGl58nBpee";
-        return  'aria2c "' + e + '" --out "' + i + '" --header "User-Agent: ' + n + '" --header "Cookie: BDUSS=' + a + '"';
-    }
+  container.define("svgCrypt", ["Snap"], function (Snap) {
+    var obj = {};
 
-    function n(e) {
-        return e ? e.replace(/&/g, "&amp;") : "";
-    }
+    obj.getReqData = function () {
+      var reqTime = Math.round(new Date().getTime() / 1000);
+      var reqPoint = obj.getStrPoint("timestamp:" + reqTime);
+      return {
+        req_time: reqTime,
+        req_point: reqPoint,
+      };
+    };
 
-    function a() {
-        function t() {
-            ie = N(), ne = J(), ae = K(), oe = d(), he = F(), "all" == he && (fe = V()), "category" == he && (ve = U()), "search" == he && (me = z()), a(), i(), n();
+    obj.getStrPoint = function (str) {
+      if (str.length < 2) {
+        return "0:0";
+      }
+
+      var path = "";
+      var current,
+        last = str[0].charCodeAt();
+      var sum = last;
+      for (var i = 1; i < str.length; i++) {
+        current = str[i].charCodeAt();
+        if (i == 1) {
+          path = path + "M";
+        } else {
+          path = path + " L";
         }
+        path = path + current + " " + last;
+        last = current;
+        sum = sum + current;
+      }
+      path = path + " Z";
+      var index = sum % str.length;
+      var data = Snap.path.getPointAtLength(path, str[index].charCodeAt());
+      return data.m.x + ":" + data.n.y;
+    };
 
-        function i() {
-            "all" == he ? se = L() : "category" == he ? se = H() : "search" == he && (se = q());
-        }
+    return obj;
+  });
 
-        function n() {
-            re = [];
-        }
+  container.define("calendar", [], function () {
+    var obj = {};
 
-        function a() {
-            pe = o();
-        }
+    obj.getTime = function () {
+      return new Date().getTime();
+    };
 
-        function o() {
-            return $("." + f.list).is(":hidden") ? "grid" : "list";
-        }
+    obj.formatTime = function (format, timestamp) {
+      format || (format = "Y-m-d H:i:s");
+      timestamp || (timestamp = obj.getTime());
+      var date = new Date(timestamp);
+      var year = 1900 + date.getYear();
+      var month = "0" + (date.getMonth() + 1);
+      var day = "0" + date.getDate();
+      var hour = "0" + date.getHours();
+      var minute = "0" + date.getMinutes();
+      var second = "0" + date.getSeconds();
+      var vars = {
+        Y: year,
+        m: month.substring(month.length - 2, month.length),
+        d: day.substring(day.length - 2, day.length),
+        H: hour.substring(hour.length - 2, hour.length),
+        i: minute.substring(minute.length - 2, minute.length),
+        s: second.substring(second.length - 2, second.length),
+      };
+      return obj.replaceVars(vars, format);
+    };
 
-        function s() {
-            p(), u(), w(), _(), S(), r();
-        }
+    obj.replaceVars = function (vars, value) {
+      Object.keys(vars).forEach(function (key) {
+        value = value.replace(key, vars[key]);
+      });
+      return value;
+    };
 
-        function r() {
-            $(document).on("click", ".exe-download", function (e) {
-                e.target.innerText && Z(e.target.innerText);
-            }), $(document).on("click", ".aria-rpc", function (e) {
-                var t = (e.target.dataset.link, e.target.dataset.filename), i = {};
-                P() || (i = {"User-Agent": b}), GM_xmlhttpRequest({
-                    method: "HEAD",
-                    headers: i,
-                    url: e.target.dataset.link,
-                    onload: function (e) {
-                        var i = e.finalUrl;
-                        if (i) {
-                            var n = x.domain + ":" + x.port + "/jsonrpc", a = {
-                                id: (new Date).getTime(),
-                                jsonrpc: "2.0",
-                                method: "aria2.addUri",
-                                params: ["token:" + x.token, [i], {
-                                    dir: x.dir,
-                                    out: t,
-                                    header: P() ? ["User-Agent:" + y] : ["User-Agent:" + b]
-                                }]
-                            };
-                            GM_xmlhttpRequest({
-                                method: "POST",
-                                headers: {"User-Agent": b},
-                                url: n,
-                                responseType: "json",
-                                timeout: 3e3,
-                                data: JSON.stringify(a),
-                                onload: function (e) {
-                                    e.response.result ? swal({
-                                        text: "发送成功",
-                                        icon: "success",
-                                        timer: 800
-                                    }) : swal({text: e.response.message, icon: "error"});
-                                },
-                                ontimeout: function () {
-                                    swal({text: "无法连接到RPC服务，请检查RPC配置", icon: "error"});
-                                }
-                            });
-                        }
-                    }
-                });
-            });
-        }
+    return obj;
+  });
 
-        function p() {
-            window.addEventListener("hashchange", function (e) {
-                a(), "all" == F() ? he == F() ? fe != V() && (fe = V(), i(), n()) : (he = F(), fe = V(), i(), n()) : "category" == F() ? he == F() ? ve != U() && (he = F(), ve = U(), i(), n()) : (he = F(), ve = U(), i(), n()) : "search" == F() && (he == F() ? me != z() && (he = F(), me = z(), i(), n()) : (he = F(), me = z(), i(), n()));
-            });
-        }
+  container.define("oneData", ["env", "http"], function (env, http) {
+    var obj = {};
 
-        function u() {
-            $("a[data-type=list]").click(function () {
-                pe = "list";
-            }), $("a[data-type=grid]").click(function () {
-                pe = "grid";
-            });
-        }
+    obj.requestOneApi = function (url, data, callback) {
+      http.ajax({
+        type: "post",
+        url: url,
+        dataType: "json",
+        data: Object.assign(env.getInfo(), data),
+        success: function (response) {
+          callback && callback(response);
+        },
+        error: function () {
+          callback && callback("");
+        },
+      });
+    };
+    return obj;
+  });
 
-        function w() {
-            var t = $("span." + f.checkbox);
-            "grid" == pe && (t = $("." + f["chekbox-grid"])), t.each(function (t, i) {
-                $(i).on("click", function (t) {
-                    var i = $(this).parent(), n = void 0, a = void 0;
-                    if ("list" == pe ? (n = $("div.file-name div.text a", i).attr("title"), a = i.hasClass(f["item-active"])) : "grid" == pe && (n = $("div.file-name a", $(this)).attr("title"), a = !$(this).hasClass(f["item-active"])), a) {
-                        e("取消选中文件：" + n);
-                        for (var o = 0; o < re.length; o++) re[o].filename == n && re.splice(o, 1);
-                    } else e("选中文件:" + n), $.each(se, function (e, t) {
-                        if (t.server_filename == n) {
-                            var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                            re.push(i);
-                        }
-                    });
-                });
-            });
-        }
+  container.define("$extend", ["$", "DOMPurify", "logger"], function (
+    $,
+    DOMPurify,
+    logger
+  ) {
+    var obj = {};
 
-        function k() {
-            $("span." + f.checkbox).each(function (e, t) {
-                $(t).unbind("click");
-            });
-        }
-
-        function _() {
-            $("div." + f["col-item"] + "." + f.check).each(function (t, i) {
-                $(i).bind("click", function (t) {
-                    $(this).parent().hasClass(f.checked) ? (e("取消全选"), re = []) : (e("全部选中"), re = [], $.each(se, function (e, t) {
-                        var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                        re.push(i);
-                    }));
-                });
-            });
-        }
-
-        function A() {
-            $("div." + f["col-item"] + "." + f.check).each(function (e, t) {
-                $(t).unbind("click");
-            });
-        }
-
-        function S() {
-            $("div." + f["list-view"] + " dd").each(function (t, i) {
-                $(i).bind("click", function (t) {
-                    var i = t.target.nodeName.toLowerCase();
-                    if ("span" != i && "a" != i && "em" != i) if (e("shiftKey:" + t.shiftKey), t.shiftKey) {
-                        re = [];
-                        var n = $("div." + f["list-view"] + " dd." + f["item-active"]);
-                        $.each(n, function (t, i) {
-                            var n = $("div.file-name div.text a", $(i)).attr("title");
-                            e("选中文件：" + n), $.each(se, function (e, t) {
-                                if (t.server_filename == n) {
-                                    var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                                    re.push(i);
-                                }
-                            });
-                        });
-                    } else {
-                        re = [];
-                        var a = $("div.file-name div.text a", $(this)).attr("title");
-                        e("选中文件：" + a), $.each(se, function (e, t) {
-                            if (t.server_filename == a) {
-                                var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                                re.push(i);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        function C() {
-            $("div." + f["list-view"] + " dd").each(function (e, t) {
-                $(t).unbind("click");
-            });
-        }
-
-        function M() {
-            var e = window.MutationObserver, t = {childList: !0};
-            ue = new e(function (e) {
-                k(), A(), C(), w(), _(), S();
-            });
-            var i = document.querySelector("." + f["list-view"]), n = document.querySelector("." + f["grid-view"]);
-            ue.observe(i, t), ue.observe(n, t);
-        }
-
-        function G() {
-            $("div." + f["bar-search"]).css("width", "18%");
-            var e = $('<span class="g-dropdown-button"></span>'),
-                t = $('<a class="g-button g-button-blue" href="javascript:;"><span class="g-button-right"><em class="icon icon-speed" title="百度网盘下载助手"></em><span class="text" style="width: 60px;">下载助手</span></span></a>'),
-                i = $('<span class="menu" style="width:114px"></span>'),
-                n = $('<span class="g-button-menu" style="display:block"></span>'),
-                a = $('<span class="g-dropdown-button g-dropdown-button-second" menulevel="2"></span>'),
-                o = $('<a class="g-button" href="javascript:;"><span class="g-button-right"><span class="text" style="width:auto">直链下载</span></span></a>'),
-                l = $('<span class="menu" style="width:120px;left:79px"></span>'),
-                s = $('<a id="batchhttplink-direct" class="g-button-menu" href="javascript:;">显示链接</a>');
-            l.append(s), n.append(a.append(o).append(l)), n.hover(function () {
-                a.toggleClass("button-open");
-            }), s.click(I);
-            var r = $('<span class="g-button-menu" style="display:block"></span>'),
-                d = $('<span class="g-dropdown-button g-dropdown-button-second" menulevel="2"></span>'),
-                c = $('<a class="g-button" href="javascript:;"><span class="g-button-right"><span class="text" style="width:auto">Aria下载</span></span></a>'),
-                p = $('<span class="menu" style="width:120px;left:79px"></span>'),
-                u = $('<a id="batchhttplink-aria" class="g-button-menu" href="javascript:;">显示链接</a>');
-            p.append(u), r.append(d.append(c).append(p)), r.hover(function () {
-                d.toggleClass("button-open");
-            }), u.click(I);
-            var h = $('<span class="g-button-menu" style="display:block"></span>'),
-                v = $('<span class="g-dropdown-button g-dropdown-button-second" menulevel="2"></span>'),
-                g = $('<a class="g-button" href="javascript:;"><span class="g-button-right"><span class="text" style="width:auto">导出到RPC</span></span></a>'),
-                m = $('<span class="menu" style="width:120px;left:79px"></span>'),
-                w = $('<a id="batchhttplink-rpc" class="g-button-menu" href="javascript:;">显示链接</a>'),
-                b = $('<a class="g-button-menu" href="javascript:;">RPC配置</a>');
-            m.append(w).append(b), h.append(v.append(g).append(m)), h.hover(function () {
-                v.toggleClass("button-open");
-            }), w.click(I), b.click(T);
-            var y = $('<span class="g-button-menu" style="display:block"></span>'),
-                x = $('<span class="g-dropdown-button g-dropdown-button-second" menulevel="2"></span>'),
-                k = $('<a class="g-button" href="javascript:;"><span class="g-button-right"><span class="text" style="width:auto">API下载</span></span></a>'),
-                _ = $('<span class="menu" style="width:120px;left:77px"></span>'),
-                A = $('<a id="download-api" class="g-button-menu" href="javascript:;">直接下载</a>'),
-                S = $('<a id="batchhttplink-api" class="g-button-menu" href="javascript:;">显示链接</a>'),
-                C = $('<a id="appid-setting" class="g-button-menu" href="javascript:;">神秘代码</a>'),
-                M = $('<a id="default-setting" class="g-button-menu" href="javascript:;" style="color: #999;">恢复默认</a>');
-            _.append(A).append(S).append(C).append(M), y.append(x.append(k).append(_)), y.hover(function () {
-                x.toggleClass("button-open");
-            }), A.click(D), S.click(I), C.click(E), M.click(j);
-            var G = $('<span class="g-button-menu" style="display:block;cursor: pointer">分享选中文件</span>'),
-                P = $('<iframe src="https://ghbtns.com/github-btn.html?user=syhyz1990&repo=baiduyun&type=star&count=true" frameborder="0" scrolling="0" style="height: 20px;max-width: 120px;padding: 0 5px;box-sizing: border-box;margin-top: 5px;"></iframe>');
-            G.click(X), i.append(y).append(r).append(h).append(G).append(P), e.append(t).append(i), e.hover(function () {
-                e.toggleClass("button-open");
-            }), $("." + f["list-tools"]).append(e), $("." + f["list-tools"]).css("height", "40px");
-        }
-
-        function T() {
-            var e = "";
-            e += '<div style="display: flex;align-items: center;justify-content: space-between;margin-bottom: 10px;"><label for="rpcDomain" style="margin-right: 5px;flex: 0 0 90px;">主机：</label><input type="text" id="rpcDomain" value="' + x.domain + '" class="swal-content__input" placeholder="http://localhost"></div>', e += '<div style="display: flex;align-items: center;justify-content: space-between;margin-bottom: 10px;"><label for="rpcPort" style="margin-right: 5px;flex: 0 0 90px;">端口：</label><input type="number" id="rpcPort" value="' + x.port + '" class="swal-content__input" placeholder="6800"></div>', e += '<div style="display: flex;align-items: center;justify-content: space-between;margin-bottom: 10px;"><label for="rpcToken" style="margin-right: 5px;flex: 0 0 90px;">密钥：</label><input type="text" id="rpcToken" value="' + x.token + '" class="swal-content__input" placeholder="没有留空"></div>', e += '<div style="display: flex;align-items: center;justify-content: space-between;margin-bottom: 10px;"><label for="rpcDir" style="margin-right: 5px;flex: 0 0 90px;">下载路径：</label><input type="text" id="rpcDir" value="' + x.dir + '" class="swal-content__input" placeholder="默认为D:"></div>', e = "<div>" + e + "</div>";
-            var t = $(e);
-            swal({title: "RPC配置", closeOnClickOutside: !1, content: t[0], button: {text: "保存"}}).then(function () {
-                GM_setValue("rpcDomain", $("#rpcDomain").val() ? $("#rpcDomain").val() : x.domain), GM_setValue("rpcPort", $("#rpcPort").val() ? $("#rpcPort").val() : x.port), GM_setValue("rpcToken", $("#rpcToken").val()), GM_setValue("rpcDir", $("#rpcDir").val() ? $("#rpcDir").val() : x.dir), history.go(0), swal({
-                    text: "保存成功",
-                    timer: 800
-                });
-            });
-        }
-
-        function E() {
-            swal({
-                text: "请输入神秘代码",
-                closeOnClickOutside: !1,
-                content: {element: "input", attributes: {value: m, placeholder: "默认为：" + g}},
-                button: {confirm: {text: "确定", value: "ok"}}
-            }).then(function (e) {
-                e && (GM_setValue("secretCode", e), swal("神秘代码执行成功 , 点击确定将自动刷新").then(function () {
-                    history.go(0);
-                }));
-            });
-        }
-
-        function j() {
-            GM_setValue("secretCode", g), swal("恢复默认成功，点击确定将自动刷新").then(function () {
-                history.go(0);
-            });
-        }
-
-        function P() {
-            return 1 === te.ISSVIP;
-        }
-
-        function D(t) {
-            e("选中文件列表：", re);
-            var i = t.target.id, n = void 0;
-            if ("download-direct" == i) {
-                var a = void 0;
-                if (0 === re.length) return void swal(v.unselected);
-                1 == re.length && (a = 1 === re[0].isdir ? "batch" : "dlink"), re.length > 1 && (a = "batch"), le = B(re);
-                var o = Q(a);
-                if (0 !== o.errno) return -1 == o.errno ? void swal("文件不存在或已被百度和谐，无法下载！") : 112 == o.errno ? void swal("页面过期，请刷新重试！") : void swal("发生错误！");
-                if ("dlink" == a) n = o.dlink[0].dlink; else {
-                    if ("batch" != a) return void swal("发生错误！");
-                    n = o.dlink, 1 === re.length && (n = n + "&zipname=" + encodeURIComponent(re[0].filename) + ".zip");
-                }
-            } else {
-                if (0 === re.length) return void swal(v.unselected);
-                if (re.length > 1) return void swal(v.morethan);
-                if (1 == re[0].isdir) return void swal(v.dir);
-                "download-api" == i && (n = W(re[0].path));
-            }
-            Z(n);
-        }
-
-        function I(t) {
-            if (e("选中文件列表：", re), 0 === re.length) return void swal(v.unselected);
-            var i = t.target.id, n = void 0, a = void 0;
-            if (n = -1 == i.indexOf("https") ? -1 == i.indexOf("http") ? location.protocol + ":" : "http:" : "https:", de = [], ce = [], -1 != i.indexOf("direct")) {
-                de = O(n);
-                if (0 === de.length) return void swal("没有链接可以显示，不要选中文件夹！");
-                ge.open({
-                    title: "直链下载",
-                    type: "batch",
-                    list: de,
-                    tip: '点击链接直接下载，请先升级 <a href="https://www.baiduyun.wiki/zh-cn/assistant.html">[网盘万能助手]</a> 至 <b>v2.2.0</b>，本链接仅支持小文件下载（<300M）',
-                    showcopy: !1
-                });
-            }
-            if (-1 != i.indexOf("aria")) {
-                if (de = R(n), a = '请先安装 <a  href="https://www.baiduyun.wiki/zh-cn/assistant.html">网盘万能助手</a> 请将链接复制到支持Aria的下载器中, 推荐使用 <a href="http://pan.baiduyun.wiki/down">XDown</a>。', 0 === de.length) return void swal("没有链接可以显示，不要选中文件夹！");
-                ge.open({title: "Aria链接", type: "batchAria", list: de, tip: a, showcopy: !0});
-            }
-            if (-1 != i.indexOf("rpc")) {
-                if (de = R(n), a = '点击按钮发送链接至Aria下载器中<a href="https://www.baiduyun.wiki/zh-cn/rpc.html">详细说明</a>，需配合最新版 <a href="https://www.baiduyun.wiki/zh-cn/assistant.html">[网盘万能助手]</a>，支持本地和远程下载，此功能建议配合百度会员使用', 0 === de.length) return void swal("没有链接可以显示，不要选中文件夹！");
-                ge.open({title: "Aria RPC", type: "batchAriaRPC", list: de, tip: a, showcopy: !1});
-            }
-            if (-1 != i.indexOf("api")) {
-                if (de = R(n), a = '请先安装 <a href="https://www.baiduyun.wiki/zh-cn/assistant.html">网盘万能助手</a> <b>v2.2.0</b> 后点击链接下载，若下载失败，请更换神秘代码 <a href="https://www.baiduyun.wiki/zh-cn/question.html" target="_blank">获取神秘代码</a>', 0 === de.length) return void swal("没有链接可以显示，API链接不要全部选中文件夹！");
-                ge.open({title: "API下载链接", type: "batch", list: de, tip: a});
-            }
-        }
-
-        function O(e) {
-            var t = [];
-            return $.each(re, function (i, n) {
-                var a = void 0, o = void 0, l = void 0;
-                a = 0 == n.isdir ? "dlink" : "batch", le = B([n]), l = Q(a), 0 == l.errno ? ("dlink" == a ? o = l.dlink[0].dlink : "batch" == a && (o = l.dlink), o = o.replace(/^([A-Za-z]+):/, e)) : o = "error", t.push({
-                    filename: n.filename,
-                    downloadlink: o
-                });
-            }), t;
-        }
-
-        function R(e) {
-            var t = [];
-            return $.each(re, function (i, n) {
-                if (1 != n.isdir) {
-                    var a = void 0;
-                    a = W(n.path), a = a.replace(/^([A-Za-z]+):/, e), t.push({filename: n.filename, downloadlink: a});
-                }
-            }), t;
-        }
-
-        function N() {
-            var e = void 0;
-            try {
-                e = new Function("return " + te.sign2)();
-            } catch (e) {
-                throw new Error(e.message);
-            }
-            return l(e(te.sign5, te.sign1));
-        }
-
-        function V() {
-            var e = location.hash, t = new RegExp("path=([^&]*)(&|$)", "i"), i = e.match(t);
-            return decodeURIComponent(i[1]);
-        }
-
-        function U() {
-            var e = location.hash, t = new RegExp("type=([^&]*)(&|$)", "i"), i = e.match(t);
-            return decodeURIComponent(i[1]);
-        }
-
-        function z() {
-            var e = location.hash, t = new RegExp("key=([^&]*)(&|$)", "i"), i = e.match(t);
-            return decodeURIComponent(i[1]);
-        }
-
-        function F() {
-            var e = location.hash;
-            return e.substring(e.indexOf("#") + 2, e.indexOf("?"));
-        }
-
-        function L() {
-            var e = [], t = we + "list", i = V();
-            oe = d();
-            var n = {
-                dir: i,
-                bdstoken: ae,
-                logid: oe,
-                order: "size",
-                num: 1e3,
-                desc: 0,
-                clienttype: 0,
-                showempty: 0,
-                web: 1,
-                channel: "chunlei",
-                appid: m
-            };
-            return $.ajax({
-                url: t, async: !1, method: "GET", data: n, success: function (t) {
-                    e = 0 === t.errno ? t.list : [];
-                }
-            }), e;
-        }
-
-        function H() {
-            var e = [], t = we + "categorylist", i = U();
-            oe = d();
-            var n = {
-                category: i,
-                bdstoken: ae,
-                logid: oe,
-                order: "size",
-                desc: 0,
-                clienttype: 0,
-                showempty: 0,
-                web: 1,
-                channel: "chunlei",
-                appid: m
-            };
-            return $.ajax({
-                url: t, async: !1, method: "GET", data: n, success: function (t) {
-                    e = 0 === t.errno ? t.info : [];
-                }
-            }), e;
-        }
-
-        function q() {
-            var e = [], t = we + "search";
-            oe = d(), me = z();
-            var i = {
-                recursion: 1,
-                order: "time",
-                desc: 1,
-                showempty: 0,
-                web: 1,
-                page: 1,
-                num: 100,
-                key: me,
-                channel: "chunlei",
-                app_id: 250528,
-                bdstoken: ae,
-                logid: oe,
-                clienttype: 0
-            };
-            return $.ajax({
-                url: t, async: !1, method: "GET", data: i, success: function (t) {
-                    e = 0 === t.errno ? t.list : [];
-                }
-            }), e;
-        }
-
-        function B(e) {
-            if (0 === e.length) return null;
-            var t = [];
-            return $.each(e, function (e, i) {
-                t.push(i.fs_id);
-            }), "[" + t + "]";
-        }
-
-        function J() {
-            return te.timestamp;
-        }
-
-        function K() {
-            return te.MYBDSTOKEN;
-        }
-
-        function X() {
-            var e = [];
-            if (0 === re.length) return void swal(v.unselected);
-            $.each(re, function (t, i) {
-                e.push(i.path);
-            });
-            var t = "https://pan.baidu.com/share/set?channel=chunlei&clienttype=0&web=1&channel=chunlei&web=1&app_id=250528&bdstoken=" + ae + "&logid=" + oe + "&clienttype=0",
-                i = Y(), n = {schannel: 4, channel_list: JSON.stringify([]), period: 0, pwd: i, fid_list: B(re)};
-            $.ajax({
-                url: t, async: !1, method: "POST", data: n, success: function (e) {
-                    if (0 === e.errno) {
-                        var t = e.link + "#" + i;
-                        swal({
-                            title: "分享链接",
-                            closeOnClickOutside: !1,
-                            text: t + " （#后面为提取码）",
-                            buttons: {open: {text: "打开", value: "open"}, copy: {text: "复制链接", value: "copy"}}
-                        }).then(function (e) {
-                            "open" === e && GM_openInTab(t, {active: !0}), "copy" === e && GM_setClipboard(t);
-                        });
-                    }
-                }
-            });
-        }
-
-        function Y() {
-            function e(e, t) {
-                return Math.round(Math.random() * (e - t) + t);
-            }
-
-            for (var t = "", i = 0; i < 4; i++) {
-                t = t + e(0, 9) + String.fromCharCode(e(97, 122)) + String.fromCharCode(e(65, 90));
-            }
-            for (var n = "", i = 0; i < 4; i++) n += t[e(0, t.length - 1)];
-            return n;
-        }
-
-        function Q(e) {
-            var t = void 0;
-            oe = d();
-            var i = {sign: ie, timestamp: ne, fidlist: le, type: e};
-            return $.ajax({
-                url: "https://pan.baidu.com/api/download?clienttype=1",
-                async: !1,
-                method: "POST",
-                data: i,
-                success: function (e) {
-                    t = e;
-                }
-            }), t;
-        }
-
-        function W(e) {
-            return be + "file?method=download&path=" + encodeURIComponent(e) + "&app_id=" + m;
-        }
-
-        function Z(e) {
-            $("#helperdownloadiframe").attr("src", e);
-        }
-
-        function ee() {
-            var e = $('<div class="helper-hide" style="padding:0;margin:0;display:block"></div>'),
-                t = $('<iframe src="javascript:;" id="helperdownloadiframe" style="display:none"></iframe>');
-            e.append(t), $("body").append(e);
-        }
-
-        var te = void 0, ie = void 0, ne = void 0, ae = void 0, oe = void 0, le = void 0, se = [], re = [], de = [],
-            ce = [], pe = "list", ue = void 0, he = void 0, fe = void 0, ve = void 0, ge = void 0, me = void 0,
-            we = location.protocol + "//" + location.host + "/api/",
-            be = location.protocol + "//pcs.baidu.com/rest/2.0/pcs/";
-        location.protocol;
-        this.init = function () {
-            if (te = unsafeWindow.yunData, e("初始化信息:", te), void 0 === te) return void e("页面未正常加载，或者百度已经更新！");
-            t(), s(), M(), G(), ee(), ge = new c({addCopy: !0}), e("下载助手加载成功！当前版本：", h);
+    obj.init = function () {
+      if (DOMPurify && DOMPurify instanceof Function) {
+        var domPurify = DOMPurify(window);
+        $.fn.safeHtml = function (html) {
+          try {
+            this.html(domPurify.sanitize(html));
+          } catch (err) {
+            logger.error(err);
+          }
         };
+      } else {
+        $.fn.safeHtml = function (html) {
+          this.html(html);
+        };
+      }
+    };
+
+    return obj.init(), obj;
+  });
+
+  container.define("appRunner", ["router", "logger", "meta", "$"], function (
+    router,
+    logger,
+    meta,
+    $,
+    require
+  ) {
+    var obj = {};
+
+    obj.run = function (appList) {
+      var metaName = "status";
+      if (meta.existMeta(metaName)) {
+        logger.info("setup already");
+      } else {
+        // 添加meta
+        meta.appendMeta(metaName);
+
+        // 运行应用
+        $(function () {
+          obj.runAppList(appList);
+        });
+      }
+    };
+
+    obj.runAppList = function (appList) {
+      var url = router.getUrl();
+      for (var i in appList) {
+        var app = appList[i];
+
+        var match = obj.matchApp(url, app);
+        if (match == false) {
+          continue;
+        }
+
+        if (require(app.name).run() == true) {
+          break;
+        }
+      }
+    };
+
+    obj.matchApp = function (url, app) {
+      var match = false;
+      app.matchs.forEach(function (item) {
+        if (url.indexOf(item) > 0 || item == "*") {
+          match = true;
+        }
+      });
+      return match;
+    };
+
+    return obj;
+  });
+
+  /** custom **/
+  container.define("factory", ["gmDao", "ScopeDao"], function (
+    gmDao,
+    ScopeDao
+  ) {
+    var obj = {
+      daos: {},
+    };
+
+    obj.getConfigDao = function () {
+      return obj.getDao("config", function () {
+        return ScopeDao(gmDao, "$config");
+      });
+    };
+
+    obj.getStorageDao = function () {
+      return obj.getDao("storage", function () {
+        return ScopeDao(gmDao, "$storage");
+      });
+    };
+
+    obj.getDao = function (key, createFunc) {
+      if (!obj.daos.hasOwnProperty(key)) {
+        obj.daos[key] = createFunc();
+      }
+      return obj.daos[key];
+    };
+
+    return obj;
+  });
+
+  container.define("constant", [], function () {
+    return {
+      source: {
+        baidu: "baidu",
+      },
+      option: {
+        baidu_page_home: {
+          name: "baidu_page_home",
+          value: "yes",
+        },
+        baidu_page_share: {
+          name: "baidu_page_share",
+          value: "yes",
+        },
+        baidu_page_verify: {
+          name: "baidu_page_verify",
+          value: "yes",
+        },
+        baidu_share_status: {
+          name: "baidu_share_status",
+          value: "yes",
+        },
+        baidu_custom_password: {
+          name: "baidu_custom_password",
+          value: "yes",
+        },
+        baidu_show_origin: {
+          name: "baidu_show_origin",
+          value: "yes",
+        },
+        baidu_auto_jump: {
+          name: "baidu_auto_jump",
+          value: "no",
+        },
+      },
+    };
+  });
+
+  container.define("api", ["manifest", "oneData", "svgCrypt"], function (
+    manifest,
+    oneData,
+    svgCrypt
+  ) {
+    var obj = {};
+
+    obj.versionQuery = function (callback) {
+      oneData.requestOneApi(manifest.getApi("version"), {}, callback);
+    };
+
+    obj.queryShareOrigin = function (
+      shareSource,
+      shareId,
+      shareLink,
+      callback
+    ) {
+      var data = {
+        share_id: shareId,
+        share_source: shareSource,
+        share_point: svgCrypt.getStrPoint(shareId),
+        share_link: shareLink,
+      };
+      oneData.requestOneApi(manifest.getApi("origin"), data, callback);
+    };
+
+    obj.querySharePwd = function (shareSource, shareId, shareLink, callback) {
+      var data = {
+        share_id: shareId,
+        share_source: shareSource,
+        share_point: svgCrypt.getStrPoint(shareId),
+        share_link: shareLink,
+      };
+      oneData.requestOneApi(manifest.getApi("query"), data, callback);
+    };
+
+    obj.storeSharePwd = function (
+      shareId,
+      sharePwd,
+      shareLink,
+      shareSource,
+      callback
+    ) {
+      var data = {
+        share_id: shareId,
+        share_pwd: sharePwd,
+        share_source: shareSource,
+        share_point: svgCrypt.getStrPoint(shareId),
+        share_link: shareLink,
+      };
+      oneData.requestOneApi(manifest.getApi("store"), data, callback);
+    };
+
+    obj.queryShareList = function (shareSource, callback) {
+      var data = {
+        share_source: shareSource,
+      };
+      oneData.requestOneApi(manifest.getApi("lists"), data, callback);
+    };
+
+    obj.deleteShare = function (shareId, callback) {
+      var data = {
+        share_id: shareId,
+        share_point: svgCrypt.getStrPoint(shareId),
+      };
+      oneData.requestOneApi(manifest.getApi("delete"), data, callback);
+    };
+
+    return obj;
+  });
+
+  container.define(
+    "shareLog",
+    ["config", "calendar", "constant", "api"],
+    function (config, calendar, constant, api) {
+      var obj = {
+        name: "share_list",
+        modes: {
+          LOCAL: "local",
+          ONLINE: "online",
+        },
+      };
+
+      obj.getShareMode = function () {
+        var shareMode = config.getConfig("share_mode");
+        return shareMode == obj.modes.LOCAL
+          ? obj.modes.LOCAL
+          : obj.modes.ONLINE;
+      };
+
+      obj.setShareMode = function (shareMode) {
+        config.setConfig(
+          "share_mode",
+          shareMode == obj.modes.LOCAL ? obj.modes.LOCAL : obj.modes.ONLINE
+        );
+      };
+
+      obj.getShareLogList = function (shareSource, callback) {
+        if (obj.getShareMode() == obj.modes.LOCAL) {
+          callback(obj.getLocalShareLogList());
+        } else {
+          obj.getOnlineShareLogList(shareSource, callback);
+        }
+      };
+
+      obj.getOnlineShareLogList = function (shareSource, callback) {
+        api.queryShareList(shareSource, function (response) {
+          if (response instanceof Object && response.code == 1) {
+            callback(response.data.list);
+          } else {
+            callback([]);
+          }
+        });
+      };
+
+      obj.getLocalShareLogList = function () {
+        var shareList = config.getConfig(obj.name);
+        return shareList ? shareList : {};
+      };
+
+      obj.addShareLog = function (shareId, sharePwd, shareLink, shareSource) {
+        api.storeSharePwd(shareId, sharePwd, shareLink, shareSource);
+
+        var shareList = obj.getLocalShareLogList();
+        shareList[shareId] = {
+          share_id: shareId,
+          share_pwd: sharePwd,
+          share_link: shareLink,
+          share_source: shareSource,
+          share_time: new Date().getTime(),
+        };
+        config.setConfig(obj.name, shareList);
+      };
+
+      obj.removeShareLog = function (shareId, callback) {
+        var shareList = obj.getLocalShareLogList();
+        delete shareList[shareId];
+        config.setConfig(obj.name, shareList);
+
+        api.deleteShare(shareId, callback);
+      };
+
+      obj.buildShareLink = function (shareId, shareSource, shareLink) {
+        if (shareSource == constant.source.baidu) {
+          shareLink = "https://pan.baidu.com/s/1" + shareId;
+        }
+        return shareLink;
+      };
+
+      obj.buildShareTime = function (shareTime) {
+        return calendar.formatTime("Y-m-d H:i:s", shareTime);
+      };
+
+      return obj;
     }
+  );
 
-    function o() {
-        function t() {
-            if (fe = n(), W = Q.SIGN, Z = Q.TIMESTAMP, ee = Q.MYBDSTOKEN, te = "chunlei", ie = 0, ne = 1, ae = m, oe = d(), le = 0, se = "share", de = Q.SHARE_ID, re = Q.SHARE_UK, "secret" == fe && (pe = l()), a()) {
-                var e = {};
-                2 == Q.CATEGORY ? (e.filename = Q.FILENAME, e.path = Q.PATH, e.fs_id = Q.FS_ID, e.isdir = 0) : void 0 != Q.FILEINFO && (e.filename = Q.FILEINFO[0].server_filename, e.path = Q.FILEINFO[0].path, e.fs_id = Q.FILEINFO[0].fs_id, e.isdir = Q.FILEINFO[0].isdir), $e.push(e);
-            } else ue = Q.SHARE_ID, ge = s(), me = u(), xe = z();
+  container.define(
+    "runtime",
+    ["router", "manifest", "calendar", "storage", "api"],
+    function (router, manifest, calendar, storage, api) {
+      var obj = {};
+
+      obj.openOptionsPage = function () {
+        router.openTab(manifest.getOptionsPage(), true);
+      };
+
+      obj.initVersion = function () {
+        var versionDate = parseInt(storage.getValue("version_date"));
+        var currentDate = calendar.formatTime("Ymd");
+        if (!versionDate || versionDate < currentDate) {
+          api.versionQuery(function (response) {
+            storage.setValue("version_date", currentDate);
+
+            if (
+              response &&
+              response.code == 1 &&
+              response.data instanceof Object
+            ) {
+              var versionPayload = response.data;
+              storage.setValue("version_payload", versionPayload);
+              storage.setValue("version_latest", versionPayload.version);
+            }
+          });
+        }
+      };
+
+      obj.initRuntime = function () {
+        obj.initVersion();
+      };
+
+      return obj;
+    }
+  );
+
+  container.define("core", ["runtime", "$extend"], function (runtime) {
+    var obj = {};
+
+    obj.ready = function (callback) {
+      runtime.initRuntime();
+
+      callback && callback();
+    };
+
+    return obj;
+  });
+
+  /** app **/
+  container.define(
+    "app_baidu",
+    [
+      "config",
+      "option",
+      "router",
+      "logger",
+      "unsafeWindow",
+      "constant",
+      "runtime",
+      "api",
+      "shareLog",
+      "$",
+    ],
+    function (
+      config,
+      option,
+      router,
+      logger,
+      unsafeWindow,
+      constant,
+      runtime,
+      api,
+      shareLog,
+      $
+    ) {
+      var obj = {
+        app_id: 778750,
+        temp_path: "/onetmp",
+        yun_data: null,
+        verify_page: {
+          share_pwd: null,
+          setPwd: null,
+          backupPwd: null,
+          restorePwd: null,
+          submit_pwd: null,
+        },
+      };
+
+      obj.run = function () {
+        var url = router.getUrl();
+        if (url.indexOf(".baidu.com/s/") > 0) {
+          option.isOptionActive(option.constant.baidu_page_share) &&
+            obj.initSharePage();
+          return true;
+        } else if (url.indexOf(".baidu.com/disk/home") > 0) {
+          option.isOptionActive(option.constant.baidu_page_home) &&
+            obj.initHomePage();
+          return true;
+        } else if (url.indexOf(".baidu.com/disk/timeline") > 0) {
+          option.isOptionActive(option.constant.baidu_page_home) &&
+            obj.initTimeLinePage();
+          return true;
+        } else if (url.indexOf(".baidu.com/share/init") > 0) {
+          option.isOptionActive(option.constant.baidu_page_verify) &&
+            obj.initVerifyPage();
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      obj.initSharePage = function () {
+        obj.removeVideoLimit();
+
+        obj.prettySingleSharePage();
+
+        obj.initButtonShare();
+
+        obj.initButtonEvent();
+
+        if (option.isOptionActive(option.constant.baidu_show_origin)) {
+          obj.showShareOrigin();
+        }
+      };
+
+      obj.initHomePage = function () {
+        obj.registerCustomSharePwd();
+
+        obj.initButtonHome();
+
+        obj.initButtonEvent();
+      };
+
+      obj.initTimeLinePage = function () {
+        obj.registerCustomSharePwd();
+
+        obj.initButtonTimeLine();
+
+        obj.initButtonEvent();
+      };
+
+      obj.initVerifyPage = function () {
+        obj.registerStoreSharePwd();
+
+        if (obj.initVerifyPageElement()) {
+          obj.autoPaddingSharePwd();
+
+          obj.registerPwdShareSwitch();
+        }
+      };
+
+      obj.initVerifyPageElement = function () {
+        var shareId = obj.getShareId();
+        var $pwd = $(".input-area input");
+        if (shareId && $pwd.length) {
+          // 设置提取码
+          obj.verify_page.setPwd = function (pwd) {
+            $pwd.val(pwd);
+          };
+
+          // 备份提取码
+          obj.verify_page.backupPwd = function (pwd) {
+            $pwd.attr("data-pwd", pwd);
+          };
+
+          // 还原提取码
+          obj.verify_page.restorePwd = function () {
+            $pwd.val($pwd.attr("data-pwd"));
+          };
+
+          // 提交提取码
+          var $button = $(".input-area .g-button");
+          if ($button.length) {
+            obj.verify_page.submit_pwd = function () {
+              $button.click();
+            };
+          }
+
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      obj.autoPaddingSharePwd = function () {
+        var shareId = obj.getShareId();
+        var shareLink = router.getUrl();
+        api.querySharePwd(constant.source.baidu, shareId, shareLink, function (
+          response
+        ) {
+          if (response && response.code == 1) {
+            var sharePwd = response.data.share_pwd;
+            obj.verify_page.share_pwd = sharePwd;
+            obj.verify_page.setPwd(sharePwd);
+            obj.showTipSuccess("填充提取码成功");
+
+            if (option.isOptionActive(option.constant.baidu_auto_jump)) {
+              obj.verify_page.submit_pwd && obj.verify_page.submit_pwd();
+            }
+          } else {
+            obj.showTipError("暂无人分享提取码");
+          }
+        });
+      };
+
+      obj.registerPwdShareSwitch = function () {
+        // 添加开关
+        $(".pickpw").after(
+          '<dl class="clearfix"><dt>提取码分享设置<span style="float:right"><input type="checkbox" checked id="nd-share-check" style="vertical-align: middle;"> <a class="nd-open-page-option" href="javascript:;" title="点击查看更多脚本配置">共享提取码</a></span></dt></dl>'
+        );
+        obj.isPwdShareOpen() || $("#nd-share-check").removeAttr("checked");
+
+        // 开关-事件
+        $("#nd-share-check").on("change", function () {
+          if ($(this).is(":checked")) {
+            option.setOptionActive(option.constant.baidu_share_status);
+          } else {
+            option.setOptionUnActive(option.constant.baidu_share_status);
+          }
+        });
+
+        // 打开配置页
+        $(".nd-open-page-option").click(function () {
+          runtime.openOptionsPage();
+        });
+      };
+
+      obj.registerStoreSharePwd = function () {
+        obj
+          .getJquery()(document)
+          .ajaxComplete(function (event, xhr, options) {
+            var requestUrl = options.url;
+            if (requestUrl.indexOf("/share/verify") >= 0) {
+              var match = options.data.match(/pwd=([a-z0-9]+)/i);
+              if (!match) {
+                return logger.warn("pwd share not match");
+              }
+
+              // 拒绝*号
+              if (obj.verify_page.backupPwd) {
+                obj.verify_page.backupPwd(match[1]);
+                setTimeout(obj.verify_page.restorePwd, 500);
+              }
+
+              var response = xhr.responseJSON;
+              if (!(response && response.errno == 0)) {
+                return logger.warn("pwd share error");
+              }
+
+              var sharePwd = match[1];
+              if (sharePwd == obj.verify_page.share_pwd) {
+                return logger.warn("pwd share not change");
+              }
+
+              if (!obj.isPwdShareOpen()) {
+                return logger.warn("pwd share closed");
+              }
+
+              var shareId = obj.getShareId();
+              var shareLink = router.getUrl();
+              shareLog.addShareLog(
+                shareId,
+                sharePwd,
+                shareLink,
+                constant.source.baidu
+              );
+            }
+          });
+      };
+
+      obj.registerCustomSharePwd = function () {
+        // 功能开关
+        if (!option.isOptionActive(option.constant.baidu_custom_password)) {
+          return;
         }
 
-        function i() {
-            var e = location.hash && /^#([a-zA-Z0-9]{4})$/.test(location.hash) && RegExp.$1,
-                t = $('.pickpw input[tabindex="1"]'), i = $(".pickpw a.g-button"), n = $(".pickpw .input-area"),
-                a = $('<div style="margin:-8px 0 10px ;color: #ff5858">正在获取提取码</div>');
-            (location.href.match(/\/init\?(?:surl|shareid)=((?:\w|-)+)/) || location.href.match(/\/s\/1((?:\w|-)+)/))[1];
-            t && i && (n.prepend(a), e && (a.text("发现提取码，已自动为您填写"), setTimeout(function () {
-                t.val(e), i.click();
-            }, 500)));
-        }
+        obj.loadPlugin("网盘分享", "com.baidu.pan");
 
-        function n() {
-            return 1 === Q.SHARE_PUBLIC ? "public" : "secret";
-        }
-
-        function a() {
-            return void 0 === Q.getContext;
-        }
-
-        function o() {
-            return 1 == Q.MYSELF;
-        }
-
-        function l() {
-            return '{"sekey":"' + decodeURIComponent(r("BDCLND")) + '"}';
-        }
-
-        function s() {
-            var e = location.hash, t = new RegExp("path=([^&]*)(&|$)", "i"), i = e.match(t);
-            return decodeURIComponent(i[1]);
-        }
-
-        function u() {
-            var e = "list";
-            return $(".list-switched-on").length > 0 ? e = "list" : $(".grid-switched-on").length > 0 && (e = "grid"), e;
-        }
-
-        function g() {
-            a() ? ($("div.slide-show-right").css("width", "500px"), $("div.frame-main").css("width", "96%"), $("div.share-file-viewer").css("width", "740px").css("margin-left", "auto").css("margin-right", "auto")) : $("div.slide-show-right").css("width", "500px");
-            var e = $('<span class="g-dropdown-button"></span>'),
-                t = $('<a class="g-button g-button-blue" style="width: 114px;" data-button-id="b200" data-button-index="200" href="javascript:;"></a>'),
-                i = $('<span class="g-button-right"><em class="icon icon-speed" title="百度网盘下载助手"></em><span class="text" style="width: 60px;">下载助手</span></span>'),
-                n = $('<span class="menu" style="width:auto;z-index:41"></span>'),
-                
-                r = $('<a data-menu-id="b-menu208" class="g-button-menu" href="javascript:;" data-type="down">显示链接</a>'),
-                d = $('<a data-menu-id="b-menu208" class="g-button-menu" href="javascript:;">显示Aria链接</a>'),
-                o = $('<a data-menu-id="b-menu207" class="g-button-menu" href="javascript:;">保存到网盘</a>'),
-                p = $('<a data-menu-id="b-menu209" style="color: #e85653;font-weight: 700;" class="g-button-menu" href="javascript:;">Ver ' + h + "</a>");
-            n.append(r).append(d).append(o).append(p), t.append(i), e.append(t).append(n), e.hover(function () {
-                e.toggleClass("button-open");
-            }), o.click(_), r.click(J), d.click(S), p.click(github_link), $("div.module-share-top-bar div.bar div.x-button-box").append(e);
-        }
-
-        function y() {
-            var e = {shareid: ue, from: Q.SHARE_UK, bdstoken: Q.MYBDSTOKEN, logid: d()},
-                t = {path: w, isdir: 1, size: "", block_list: [], method: "post", dataType: "json"},
-                i = "https://pan.baidu.com/api/create?a=commit&channel=chunlei&app_id=250528&web=1&app_id=250528&bdstoken=" + e.bdstoken + "&logid=" + e.logid + "&clienttype=0";
-            $.ajax({
-                url: i, async: !1, method: "POST", data: t, success: function (e) {
-                    0 === e.errno ? (swal("目录创建成功！"), _()) : swal("目录创建失败，请前往我的网盘页面手动创建！");
+        obj.onModuleReady(
+          "function-widget-1:share/util/shareDialog.js",
+          function () {
+            // 分享事件
+            obj.async("function-widget-1:share/util/shareDialog.js", function (
+              shareDialog
+            ) {
+              shareDialog.prototype.onVisibilityChangeOrigin =
+                shareDialog.prototype.onVisibilityChange;
+              shareDialog.prototype.onVisibilityChange = function (status) {
+                if ($(".nd-input-share-pwd").length == 0) {
+                  var sharePwd = config.getConfig("share_pwd");
+                  var html =
+                    '<tr><td class="first-child"><label>提取码</label></td><td><input type="text" class="nd-input-share-pwd" value="' +
+                    (sharePwd ? sharePwd : "") +
+                    '" placeholder="为空则随机四位" style="padding: 6px; width: 100px;border: 1px solid #e9e9e9;"></td></tr>';
+                  $("#share .dialog-body table").append(html);
                 }
+                this.onVisibilityChangeOrigin(status);
+              };
             });
-        }
 
-
-        // This method opens the github URL in a new tab.
-        function github_link() {
-            GM_openInTab("https://github.com/u0966537/BaiduCloudDownloader", {active: !0});
-        }
-
-        function _() {
-            if (null === ee) return swal(v.unlogin), !1;
-            if (0 === $e.length) return void swal(v.unselected);
-            if (o()) return void swal({
-                title: "提示",
-                text: "自己分享的文件请到网盘中下载！",
-                buttons: {confirm: {text: "打开网盘", value: "confirm"}}
-            }).then(function (e) {
-                "confirm" === e && (location.href = "https://pan.baidu.com/disk/home#/all?path=%2F&vmode=list");
-            });
-            var e = [];
-            $.each($e, function (t, i) {
-                e.push(i.fs_id);
-            });
-            var t = {shareid: Q.SHARE_ID, from: Q.SHARE_UK, bdstoken: Q.MYBDSTOKEN, logid: d()},
-                i = {path: GM_getValue("savePath"), fsidlist: JSON.stringify(e)},
-                n = "https://pan.baidu.com/share/transfer?shareid=" + t.shareid + "&from=" + t.from + "&ondup=newcopy&async=1&channel=chunlei&web=1&app_id=250528&bdstoken=" + t.bdstoken + "&logid=" + t.logid + "&clienttype=0";
-            $.ajax({
-                url: n, async: !1, method: "POST", data: i, success: function (e) {
-                    0 === e.errno ? swal({
-                        title: "提示",
-                        text: "文件已保存至我的网盘，请再网盘中使用下载助手下载！",
-                        buttons: {confirm: {text: "打开网盘", value: "confirm"}}
-                    }).then(function (e) {
-                        "confirm" === e && (location.href = "https://pan.baidu.com/disk/home#/all?vmode=list&path=" + encodeURIComponent(w));
-                    }) : 2 === e.errno ? swal({
-                        title: "提示",
-                        text: "保存目录不存在，是否先创建该目录？",
-                        buttons: {confirm: {text: "创建目录", value: "confirm"}}
-                    }).then(function (e) {
-                        "confirm" === e && y();
-                    }) : swal("保存失败，请手动保存");
-                }
-            });
-        }
-
-        function A() {
-            var e = prompt("请输入保存路径，例如/PanHelper", w);
-            null !== e && (/^\//.test(e) ? (GM_setValue("savePath", e), swal({
-                title: "提示",
-                text: "路径设置成功！点击确定后立即生效",
-                buttons: {confirm: {text: "确定", value: "confirm"}}
-            }).then(function (e) {
-                "confirm" === e && history.go(0);
-            })) : swal("请输入正确的路径，例如/PanHelper"));
-        }
-
-        function S() {
-            return null === ee ? (swal(v.unlogin), !1) : (e("选中文件列表：", $e), 0 === $e.length ? (swal(v.unselected), !1) : 1 == $e[0].isdir ? (swal(v.toobig), !1) : (ve = "ariclink", void K(function (e) {
-                if (void 0 !== e) if (-20 == e.errno) {
-                    if (!(he = L()) || 0 !== he.errno) return swal("获取验证码失败！"), !1;
-                    ye.open(he);
-                } else {
-                    if (112 == e.errno) return swal("页面过期，请刷新重试"), !1;
-                    if (0 === e.errno) {
-                        be.open({
-                            title: "文件的Aria下载链接",
-                            type: "shareAriaLink",
-                            list: e.list,
-                            tip: '请先阅读 <a  href="https://github.com/u0966537/BaiduCloudDownloader">使用说明/攻略</a>。请将Aria链接到复制到支持的下载器中下载，推荐使用 <a  href="http://pan.baiduyun.wiki/down">XDown</a>',
-                            showcopy: !0
-                        });
-                    } else swal(v.fail);
-                }
-            })));
-        }
-
-        function C() {
-            var e = $('<div class="helper-hide" style="padding:0;margin:0;display:block"></div>'),
-                t = $('<iframe src="javascript:;" id="helperdownloadiframe" style="display:none"></iframe>');
-            e.append(t), $("body").append(e);
-        }
-
-        function M() {
-            T(), P(), D(), O(), N(), G();
-        }
-
-        function G() {
-            $(document).on("click", ".aria-rpc", function (e) {
-                var t = (e.target.dataset.link, e.target.dataset.filename);
-                GM_xmlhttpRequest({
-                    method: "HEAD",
-                    headers: {"User-Agent": b},
-                    url: e.target.dataset.link,
-                    onload: function (e) {
-                        var i = e.finalUrl;
-                        if (i) {
-                            var n = x.domain + ":" + x.port + "/jsonrpc", a = {
-                                id: (new Date).getTime(),
-                                jsonrpc: "2.0",
-                                method: "aria2.addUri",
-                                params: ["token:" + x.token, [i], {dir: x.dir, out: t, header: ["User-Agent:" + b]}]
-                            };
-                            GM_xmlhttpRequest({
-                                method: "POST",
-                                headers: {"User-Agent": b},
-                                url: n,
-                                responseType: "json",
-                                timeout: 3e3,
-                                data: JSON.stringify(a),
-                                onload: function (e) {
-                                    e.response.result ? swal({
-                                        text: "发送成功",
-                                        icon: "success",
-                                        timer: 800
-                                    }) : swal({text: e.response.message, icon: "error"});
-                                },
-                                ontimeout: function () {
-                                    swal({text: "无法连接到RPC服务，请检查RPC配置", icon: "error"});
-                                }
-                            });
-                        }
-                    }
-                });
-            });
-        }
-
-        function T() {
-            window.addEventListener("hashchange", function (e) {
-                me = u(), ge == s() || (ge = s(), E(), j());
-            });
-        }
-
-        function E() {
-            xe = z();
-        }
-
-        function j() {
-            $e = [];
-        }
-
-        function P() {
-            u();
-        }
-
-        function D() {
-            me = u();
-            var t = $("span." + f.checkbox);
-            "grid" == me && (t = $("." + f["chekbox-grid"])), t.each(function (t, i) {
-                $(i).on("click", function (t) {
-                    var i = $(this).parent(), n = void 0, a = void 0;
-                    if ("list" == me ? (n = $(".file-name div.text a", i).attr("title"), a = $(this).parents("dd").hasClass("JS-item-active")) : "grid" == me && (n = $("div.file-name a", i).attr("title"), a = !$(this).hasClass("JS-item-active")), a) {
-                        e("取消选中文件：" + n);
-                        for (var o = 0; o < $e.length; o++) $e[o].filename == n && $e.splice(o, 1);
-                    } else e("选中文件: " + n), $.each(xe, function (e, t) {
-                        if (t.server_filename == n) {
-                            var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                            $e.push(i);
-                        }
-                    });
-                });
-            });
-        }
-
-        function I() {
-            $("span." + f.checkbox).each(function (e, t) {
-                $(t).unbind("click");
-            });
-        }
-
-        function O() {
-            $("div." + f["col-item"] + "." + f.check).each(function (t, i) {
-                $(i).bind("click", function (t) {
-                    $(this).parent().hasClass(f.checked) ? (e("取消全选"), $e = []) : (e("全部选中"), $e = [], $.each(xe, function (e, t) {
-                        var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                        $e.push(i);
-                    }));
-                });
-            });
-        }
-
-        function R() {
-            $("div." + f["col-item"] + "." + f.check).each(function (e, t) {
-                $(t).unbind("click");
-            });
-        }
-
-        function N() {
-            $("div." + f["list-view"] + " dd").each(function (t, i) {
-                $(i).bind("click", function (t) {
-                    var i = t.target.nodeName.toLowerCase();
-                    if ("span" != i && "a" != i && "em" != i) {
-                        $e = [];
-                        var n = $("div.file-name div.text a", $(this)).attr("title");
-                        e("选中文件：" + n), $.each(xe, function (e, t) {
-                            if (t.server_filename == n) {
-                                var i = {filename: t.server_filename, path: t.path, fs_id: t.fs_id, isdir: t.isdir};
-                                $e.push(i);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        function V() {
-            $("div." + f["list-view"] + " dd").each(function (e, t) {
-                $(t).unbind("click");
-            });
-        }
-
-        function U() {
-            var e = window.MutationObserver, t = {childList: !0};
-            we = new e(function (e) {
-                I(), R(), V(), D(), O(), N();
-            });
-            var i = document.querySelector("." + f["list-view"]), n = document.querySelector("." + f["grid-view"]);
-            we.observe(i, t), we.observe(n, t);
-        }
-
-        function z() {
-            var e = [];
-            if ("/" == s()) e = Q.FILEINFO; else {
-                oe = d();
-                var t = {
-                    uk: re,
-                    shareid: ue,
-                    order: "other",
-                    desc: 1,
-                    showempty: 0,
-                    web: ne,
-                    dir: s(),
-                    t: Math.random(),
-                    bdstoken: ee,
-                    channel: te,
-                    clienttype: ie,
-                    app_id: ae,
-                    logid: oe
+            // 生成提取码
+            obj.async(
+              "function-widget-1:share/util/shareFriend/createLinkShare.js",
+              function (shareLink) {
+                shareLink.prototype.makePrivatePasswordOrigin =
+                  shareLink.prototype.makePrivatePassword;
+                shareLink.prototype.makePrivatePassword = function () {
+                  var sharePwd = config.getConfig("share_pwd");
+                  return sharePwd ? sharePwd : this.makePrivatePasswordOrigin();
                 };
-                $.ajax({
-                    url: _e, method: "GET", async: !1, data: t, success: function (t) {
-                        0 === t.errno && (e = t.list);
-                    }
-                });
-            }
-            return e;
-        }
+              }
+            );
 
-        function F() {
-            return null === ee ? (swal(v.unlogin), !1) : (e("选中文件列表：", $e), 0 === $e.length ? (swal(v.unselected), !1) : $e.length > 1 ? (swal(v.morethan), !1) : 1 == $e[0].isdir ? (swal(v.dir), !1) : (ve = "download", void K(function (e) {
-                if (void 0 !== e) if (-20 == e.errno) {
-                    if (he = L(), 0 !== he.errno) return void swal("获取验证码失败！");
-                    ye.open(he);
-                } else if (112 == e.errno) swal("页面过期，请刷新重试"); else if (0 === e.errno) {
-                    var t = e.list[0].dlink;
-                    Y(t);
-                } else swal(v.fail);
-            })));
-        }
-
-        function L() {
-            var e = ke + "getvcode", t = void 0;
-            oe = d();
-            var i = {
-                prod: "pan",
-                t: Math.random(),
-                bdstoken: ee,
-                channel: te,
-                clienttype: ie,
-                web: ne,
-                app_id: ae,
-                logid: oe
-            };
-            return $.ajax({
-                url: e, method: "GET", async: !1, data: i, success: function (e) {
-                    t = e;
-                }
-            }), t;
-        }
-
-        function H() {
-            he = L(), $("#dialog-img").attr("src", he.img);
-        }
-
-        function q() {
-            var e = $("#dialog-input").val();
-            return 0 === e.length ? void $("#dialog-err").text("请输入验证码") : e.length < 4 ? void $("#dialog-err").text("验证码输入错误，请重新输入") : void X(e, function (e) {
-                if (-20 == e.errno) {
-                    if (ye.close(), $("#dialog-err").text("验证码输入错误，请重新输入"), H(), !he || 0 !== he.errno) return void swal("获取验证码失败！");
-                    ye.open();
-                } else if (0 === e.errno) {
-                    if (ye.close(), "download" == ve) {
-                        if (e.list.length > 1 || 1 == e.list[0].isdir) return swal(v.morethan), !1;
-                        var t = e.list[0].dlink;
-                        Y(t);
-                    }
-                    if ("link" == ve) {
-                        be.open({
-                            title: "下载链接（仅显示文件链接）",
-                            type: "shareLink",
-                            list: e.list,
-                            tip: '点击链接直接下载，请先升级 <a href="https://www.baiduyun.wiki/zh-cn/assistant.html">[网盘万能助手]</a> 至 <b>v2.2.0</b>（出现403请先禁用IDM扩展，若仍失败请尝试Aria链接）',
-                            showcopy: !1
-                        });
-                    }
-                    if ("ariclink" == ve) {
-                        be.open({
-                            title: "下载链接（仅显示文件链接）",
-                            type: "shareAriaLink",
-                            list: e.list,
-                            tip: '请先安装 <a  href="https://www.baiduyun.wiki/zh-cn/assistant.html">网盘万能助手</a> 请将链接复制到支持Aria的下载器中, 推荐使用 <a  href="http://pan.baiduyun.wiki/down">XDown</a>',
-                            showcopy: !1
-                        });
-                    }
-                } else swal("发生错误！");
+            // 提取码更改事件
+            $(document).on("change", ".nd-input-share-pwd", function () {
+              var value = this.value;
+              if (value && !value.match(/^[0-9a-z]{4}$/i)) {
+                obj.showTipError("提取码只能是四位数字或字母");
+              }
+              config.setConfig("share_pwd", value);
             });
-        }
+          }
+        );
+      };
 
-        function B() {
-            var e = [];
-            return $.each($e, function (t, i) {
-                e.push(i.fs_id);
-            }), "[" + e + "]";
-        }
+      obj.loadPlugin = function (name, group) {
+        try {
+          var plugin = obj
+            .require("system-core:pluginHub/data/Registry.js")
+            .getPluginByNameAndGroup(name, group);
+          obj.require("system-core:pluginHub/invoker/loadPluginAssets.js")(
+            plugin
+          );
+        } catch (err) {}
+      };
 
-        function J(t) {
-            return null === ee ? (swal(v.unlogin), !1) : (e("选中文件列表：", $e), 0 === $e.length ? (swal(v.unselected), !1) : 1 == $e[0].isdir ? (swal(v.dir), !1) : (ve = "link", void K(function (e) {
-                if (void 0 !== e) if (-20 == e.errno) {
-                    if (!(he = L()) || 0 !== he.errno) return swal("获取验证码失败！"), !1;
-                    ye.open(he);
+      obj.onModuleReady = function (name, callback) {
+        try {
+          obj.require(name);
+          callback && callback();
+        } catch (err) {
+          setTimeout(function () {
+            obj.onModuleReady(name, callback);
+          }, 500);
+        }
+      };
+
+      obj.removeVideoLimit = function () {
+        var message = obj.getSystemContext().message;
+        if (message) {
+          message.callSystem("share-video-after-transfer");
+        } else {
+          logger.warn("wait removeVideoLimit...");
+          obj.setTimeout(obj.removeVideoLimit, 500);
+        }
+      };
+
+      obj.prettySingleSharePage = function () {
+        if (!obj.isSharePageMulti()) {
+          $("#layoutMain").css({
+            width: "auto",
+            "min-width": "1180px",
+            margin: "88px 30px",
+          });
+        }
+      };
+
+      obj.showShareOrigin = function () {
+        api.queryShareOrigin(
+          constant.source.baidu,
+          obj.getShareId(),
+          router.getUrl(),
+          function (response) {
+            if (response && response.code == 1) {
+              var data = response.data;
+              if (data.list && data.list.length) {
+                var html =
+                  '<div style="padding: 10px 5px; border-bottom: 1px solid #f6f6f6; line-height: 30px;">';
+                var item = data.list[0];
+                if (data.list.length > 1) {
+                  html +=
+                    '<p>分享来源：<a target="_blank" href="' +
+                    item.url +
+                    '">' +
+                    item.title +
+                    '</a> [<a class="show-origin-dialog" href="javascript:;" style="color:#ff0000;"> 查看更多 </a>]</p>';
                 } else {
-                    if (112 == e.errno) return swal("页面过期，请刷新重试"), !1;
-                    if (0 === e.errno) if ("rpc" === t.target.dataset.type) {
-                        be.open({
-                            title: "下载链接（仅显示文件链接）",
-                            type: "rpcLink",
-                            list: e.list,
-                            tip: '点击按钮发送链接至Aria下载器中 <a href="https://www.baiduyun.wiki/zh-cn/rpc.html">详细说明</a>，需配合最新版 <a href="https://www.baiduyun.wiki/zh-cn/assistant.html">[网盘万能助手]</a>，支持本地和远程下载',
-                            showcopy: !1
-                        });
-                    } else {
-                        be.open({
-                            title: "下载链接（仅显示文件链接）",
-                            type: "shareLink",
-                            list: e.list,
-                            tip: '点击链接直接下载，请先升级 <a href="https://www.baiduyun.wiki/zh-cn/assistant.html">[网盘万能助手]</a> 至 <b>v2.2.0</b>（出现403请先禁用IDM扩展，若仍失败请尝试Aria链接）',
-                            showcopy: !1
-                        });
-                    } else swal(v.fail);
+                  html +=
+                    '<p>分享来源：<a target="_blank" href="' +
+                    item.url +
+                    '">' +
+                    item.title +
+                    "</a></p>";
                 }
-            })));
-        }
+                html += "</div>";
+                $(".module-share-header").after(html);
 
-        function K(e) {
-            if (null === ee) return swal(v.unlogin), "";
-            var t = void 0;
-            if (a) {
-                ce = B(), oe = d();
-                var i = new FormData;
-                i.append("encrypt", le), i.append("product", se), i.append("uk", re), i.append("primaryid", de), i.append("fid_list", ce), "secret" == fe && i.append("extra", pe), $.ajax({
-                    url: "https://api.baiduyun.wiki/download?sign=" + W + "&timestamp=" + Z + "&logid=" + oe + "&init=" + GM_getValue("init"),
-                    cache: !1,
-                    method: "GET",
-                    async: !1,
-                    complete: function (e) {
-                        t = e.responseText;
-                    }
-                }), GM_xmlhttpRequest({
-                    method: "POST", data: i, url: atob(atob(t)), onload: function (t) {
-                        e(JSON.parse(t.response));
-                    }
+                $(document).on("click", ".show-origin-dialog", function () {
+                  var title = "分享来源";
+                  var body =
+                    '<div style="padding: 20px 20px;min-height: 120px; max-height: 300px; overflow-y: auto;">';
+
+                  data.list.forEach(function (item, index) {
+                    body +=
+                      "<p>" +
+                      ++index +
+                      '：<a target="_blank" href="' +
+                      item.url +
+                      '">' +
+                      item.title +
+                      "</a></p>";
+                  });
+
+                  body += "</div>";
+                  var footer = obj.renderFooterAppId();
+                  obj.showDialog(title, body, footer);
                 });
+              }
             }
-        }
+          }
+        );
+      };
 
-        function X(e, t) {
-            var i = void 0;
-            if (a) {
-                ce = B(), oe = d();
-                var n = new FormData;
-                n.append("encrypt", le), n.append("product", se), n.append("uk", re), n.append("primaryid", de), n.append("fid_list", ce), n.append("vcode_input", e), n.append("vcode_str", he.vcode), "secret" == fe && n.append("extra", pe), $.ajax({
-                    url: "https://api.baiduyun.wiki/download?sign=" + W + "&timestamp=" + Z + "&logid=" + oe,
-                    cache: !1,
-                    method: "GET",
-                    async: !1,
-                    complete: function (e) {
-                        i = e.responseText;
-                    }
-                }), GM_xmlhttpRequest({
-                    method: "POST", data: n, url: atob(atob(i)), onload: function (e) {
-                        t(JSON.parse(e.response));
-                    }
+      obj.initButtonShare = function () {
+        if ($(".x-button-box").length) {
+          var html =
+            '<a class="g-button nd-button-build"><span class="g-button-right"><em class="icon icon-disk" title="下载"></em><span class="text">生成链接</span></span></a>';
+          $(".x-button-box").append(html);
+        } else {
+          logger.warn("wait initButtonShare...");
+          setTimeout(obj.initButtonShare, 500);
+        }
+      };
+
+      obj.initButtonHome = function () {
+        var listTools = obj
+          .getSystemContext()
+          .Broker.getButtonBroker("listTools");
+        if (listTools && listTools.$box) {
+          var html =
+            '<a class="g-button nd-button-build"><span class="g-button-right"><em class="icon icon-disk" title="下载"></em><span class="text">生成链接</span></span></a>';
+          $(listTools.$box).prepend(html);
+        } else {
+          logger.warn("wait initButtonHome...");
+          setTimeout(obj.initButtonHome, 500);
+        }
+      };
+
+      obj.initButtonTimeLine = function () {
+        if ($(".module-operateBtn .group-button").length) {
+          var html =
+            '<span class="button"><a class="g-v-button g-v-button-middle nd-button-build"><span class="g-v-button-right"><em class="icon icon-disk"></em><span class="text">生成链接</span></span></a></span>';
+          $(".module-operateBtn .group-button").prepend(html);
+        } else {
+          logger.warn("wait initButtonTimeLine...");
+          setTimeout(obj.initButtonTimeLine, 500);
+        }
+      };
+
+      obj.initButtonEvent = function () {
+        // 生成链接
+        $(document).on("click", ".nd-button-build", function () {
+          var yunData = obj.getYunData();
+          if (yunData.MYUK || obj.isHomePage()) {
+            var fileList = obj.getSelectedFileList();
+            var fileStat = obj.getFileListStat(fileList);
+            if (fileList.length) {
+              if (fileList.length > 1 && fileStat.file_num) {
+                obj.showDownloadSelect(fileList, fileStat);
+              } else if (fileStat.file_num == 1 && !obj.isHomePage()) {
+                obj.showDownloadSingle(fileList, fileStat);
+              } else {
+                var pack = fileStat.file_num ? false : true;
+                if (obj.isHomePage()) {
+                  obj.showDownloadInfoHome(fileList, pack);
+                } else {
+                  obj.showDownloadInfoShareOffical(fileList, pack);
+                }
+              }
+            } else {
+              obj.showTipError("请至少选择一个文件或文件夹");
+            }
+          } else {
+            obj.showLogin();
+          }
+        });
+
+        // 压缩包
+        $(document).on("click", ".nd-button-pack", function () {
+          var fileList = obj.getSelectedFileList();
+          if (obj.isHomePage()) {
+            obj.showDownloadInfoHome(fileList, true);
+          } else {
+            obj.showDownloadInfoShareOffical(fileList, true);
+          }
+        });
+
+        // 多文件
+        $(document).on("click", ".nd-button-multi", function () {
+          var fileList = obj.getSelectedFileList();
+
+          // 过滤文件夹
+          fileList = obj.filterFileListDir(fileList);
+
+          if (obj.isHomePage()) {
+            obj.showDownloadInfoHome(fileList, false);
+          } else {
+            obj.showDownloadInfoShareOffical(fileList, false);
+          }
+        });
+
+        // 转存多文件
+        $(document).on("click", ".nd-button-disk", function () {
+          var fileList = obj.getSelectedFileList();
+
+          // 过滤文件夹
+          fileList = obj.filterFileListDir(fileList);
+
+          if (obj.isHomePage()) {
+            obj.showDownloadInfoHome(fileList, false);
+          } else {
+            obj.showDownloadInfoShareTransfer(fileList);
+          }
+        });
+
+        // 应用ID
+        $(document).on("click", ".nd-change-app-id", function () {
+          obj.showAppIdChange();
+        });
+
+        // 打开配置页
+        $(document).on("click", ".nd-open-page-option", function () {
+          runtime.openOptionsPage();
+        });
+
+        // 打开临时页面
+        $(document).on("click", ".nd-open-page-temp", function () {
+          router.openTab(
+            "https://pan.baidu.com/disk/home#/all?vmode=list&path=" +
+              encodeURIComponent(obj.getTempPath()),
+            true
+          );
+        });
+      };
+
+      obj.showLogin = function () {
+        obj.getJquery()("[node-type='header-login-btn']").click();
+      };
+
+      obj.showDownloadInfoShareTransfer = function (fileList) {
+        logger.info(fileList);
+        obj.applyTransferFile(fileList, obj.getTempPath(), function (response) {
+          if (response && response.extra && response.extra.list) {
+            var listMap = {};
+            response.extra.list.forEach(function (item) {
+              listMap[item.from_fs_id] = item;
+            });
+
+            var downList = [];
+            fileList.forEach(function (item) {
+              if (listMap.hasOwnProperty(item.fs_id)) {
+                item.dlink = obj.buildDownloadUrl(
+                  listMap[item.fs_id].to,
+                  item.server_filename
+                );
+                downList.push(item);
+              }
+            });
+            obj.showDownloadLinkFile(downList);
+          }
+        });
+      };
+
+      obj.showDownloadInfoShareOffical = function (fileList, pack) {
+        obj.getDownloadShare(fileList, pack, function (response) {
+          obj.hideTip();
+          logger.info(response);
+
+          if (response.list && response.list.length) {
+            // 文件
+            obj.showDownloadLinkFile(response.list);
+          } else if (response.dlink) {
+            // 压缩包
+            obj.showDownloadLinkPack(fileList, {
+              dlink: response.dlink,
+            });
+          } else {
+            // 其他
+            obj.showDialogUnKnownResponse(response);
+          }
+        });
+      };
+
+      obj.showDownloadInfoHome = function (fileList, pack) {
+        logger.info(fileList);
+        try {
+          obj.getDownloadHome(fileList, pack, function (response) {
+            obj.hideTip();
+            logger.info(response);
+
+            if (pack) {
+              if (response.dlink && typeof response.dlink == "string") {
+                // 压缩包
+                obj.showDownloadLinkPack(fileList, {
+                  dlink: response.dlink,
                 });
-            }
-        }
-
-        function Y(t) {
-            e("下载链接：" + t), t && GM_xmlhttpRequest({
-                method: "POST",
-                headers: {"User-Agent": b},
-                url: t,
-                onload: function (e) {
-                }
-            });
-        }
-
-        var Q = void 0, W = void 0, Z = void 0, ee = void 0, te = void 0, ie = void 0, ne = void 0, ae = void 0,
-            oe = void 0, le = void 0, se = void 0, re = void 0, de = void 0, ce = void 0, pe = void 0, ue = void 0,
-            he = void 0, fe = void 0, ve = void 0, ge = void 0, me = void 0, we = void 0, be = void 0, ye = void 0,
-            xe = [], $e = [], ke = location.protocol + "//" + location.host + "/api/",
-            _e = location.protocol + "//" + location.host + "/share/list";
-        this.init = function () {
-            if (GM_getValue("SETTING_P") && i(), Q = unsafeWindow.yunData, e("初始化信息:", Q), void 0 === Q) return void e("页面未正常加载，或者百度已经更新！");
-            t(), g(), be = new c({addCopy: !1}), ye = new p(H, q), C(), M(), a() || U(), e("下载助手加载成功！当前版本：", h);
-        };
-    }
-
-    function l(e) {
-        var t = void 0, i = void 0, n = void 0, a = void 0, o = void 0, l = void 0,
-            s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        for (n = e.length, i = 0, t = ""; n > i;) {
-            if (a = 255 & e.charCodeAt(i++), i == n) {
-                t += s.charAt(a >> 2), t += s.charAt((3 & a) << 4), t += "==";
-                break;
-            }
-            if (o = e.charCodeAt(i++), i == n) {
-                t += s.charAt(a >> 2), t += s.charAt((3 & a) << 4 | (240 & o) >> 4), t += s.charAt((15 & o) << 2), t += "=";
-                break;
-            }
-            l = e.charCodeAt(i++), t += s.charAt(a >> 2), t += s.charAt((3 & a) << 4 | (240 & o) >> 4), t += s.charAt((15 & o) << 2 | (192 & l) >> 6), t += s.charAt(63 & l);
-        }
-        return t;
-    }
-
-    function s() {
-        var e = /[\/].+[\/]/g;
-        return location.pathname.match(e)[0].replace(/\//g, "");
-    }
-
-    function r(e) {
-        var t = void 0, i = void 0, n = document, a = decodeURI;
-        return n.cookie.length > 0 && -1 != (t = n.cookie.indexOf(e + "=")) ? (t = t + e.length + 1, i = n.cookie.indexOf(";", t), -1 == i && (i = n.cookie.length), a(n.cookie.substring(t, i))) : "";
-    }
-
-    function d() {
-        function e(e) {
-            if (e.length < 2) {
-                var t = e.charCodeAt(0);
-                return 128 > t ? e : 2048 > t ? s(192 | t >>> 6) + s(128 | 63 & t) : s(224 | t >>> 12 & 15) + s(128 | t >>> 6 & 63) + s(128 | 63 & t);
-            }
-            var i = 65536 + 1024 * (e.charCodeAt(0) - 55296) + (e.charCodeAt(1) - 56320);
-            return s(240 | i >>> 18 & 7) + s(128 | i >>> 12 & 63) + s(128 | i >>> 6 & 63) + s(128 | 63 & i);
-        }
-
-        function t(t) {
-            return (t + "" + Math.random()).replace(l, e);
-        }
-
-        function i(e) {
-            var t = [0, 2, 1][e.length % 3],
-                i = e.charCodeAt(0) << 16 | (e.length > 1 ? e.charCodeAt(1) : 0) << 8 | (e.length > 2 ? e.charCodeAt(2) : 0);
-            return [o.charAt(i >>> 18), o.charAt(i >>> 12 & 63), t >= 2 ? "=" : o.charAt(i >>> 6 & 63), t >= 1 ? "=" : o.charAt(63 & i)].join("");
-        }
-
-        function n(e) {
-            return e.replace(/[\s\S]{1,3}/g, i);
-        }
-
-        function a() {
-            return n(t((new Date).getTime()));
-        }
-
-        var o = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/~！@#￥%……&",
-            l = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g, s = String.fromCharCode;
-        return function (e, t) {
-            return t ? a(String(e)).replace(/[+\/]/g, function (e) {
-                return "+" == e ? "-" : "_";
-            }).replace(/=/g, "") : a(String(e));
-        }(r("BAIDUID"));
-    }
-
-    function c() {
-        function e() {
-            $("div.dialog-body", o).children().remove(), $("div.dialog-header h3 span.dialog-title", o).text(""), $("div.dialog-tip p", o).text(""), $("div.dialog-button", o).hide(), $("div.dialog-radio input[type=radio][name=showmode][value=multi]", o).prop("checked", !0), $("div.dialog-radio", o).hide(), $("div.dialog-button button#dialog-copy-button", o).hide(), $("div.dialog-button button#dialog-edit-button", o).hide(), $("div.dialog-button button#dialog-exit-button", o).hide(), o.hide(), l.hide();
-        }
-
-        var t = [], a = void 0, o = void 0, l = void 0;
-        this.open = function (e) {
-            if (a = e, t = [], "link" == e.type && (t = e.list.urls, $("div.dialog-header h3 span.dialog-title", o).text(e.title + "：" + e.list.filename), $.each(e.list.urls, function (e, t) {
-                t.url = n(t.url)
-                ;var i = $('<div><div style="width:30px;float:left">' + t.rank + ':</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><a href="' + t.url + '">' + t.url + "</a></div></div>");
-                $("div.dialog-body", o).append(i);
-            })), "batch" != e.type && "batchAria" != e.type && "batchAriaRPC" != e.type || (t = e.list, $("div.dialog-header h3 span.dialog-title", o).text(e.title), $.each(e.list, function (t, n) {
-                var a = void 0;
-                if ("batchAria" == e.type) {
-                    var l = aria_download(n.downloadlink, n.filename, y);
-                    a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + n.filename + '">' + n.filename + '</div><span>：</span><a href="javascript:;" class="aria2c-link">' + l + "</a></div>");
-                }
-                "batch" == e.type && (a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + n.filename + '">' + n.filename + '</div><span>：</span><a href="' + n.downloadlink + '">' + n.downloadlink + "</a></div>")), "batchAriaRPC" == e.type && (a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + n.filename + '">' + n.filename + '</div><span>：</span><button class="aria-rpc" data-link="' + n.downloadlink + '" data-filename="' + n.filename + '">点击发送到Aria</button></div>')), $("div.dialog-body", o).append(a);
-            })), "shareLink" == e.type && (t = e.list, $("div.dialog-header h3 span.dialog-title", o).text(e.title), $.each(e.list, function (e, t) {
-                if (t.dlink = n(t.dlink), 1 != t.isdir) {
-                    var i = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + t.server_filename + '">' + t.server_filename + '</div><span>：</span><a href="' + t.dlink + '" class="share-download">' + t.dlink + "</a></div>");
-                    $("div.dialog-body", o).append(i);
-                }
-            })), "rpcLink" == e.type && (t = e.list, $("div.dialog-header h3 span.dialog-title", o).text(e.title), $.each(e.list, function (e, t) {
-                if (t.dlink = n(t.dlink), 1 != t.isdir) {
-                    var i = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + t.server_filename + '">' + t.server_filename + '</div><span>：</span><button class="aria-rpc" data-link="' + t.dlink + '" data-filename="' + t.server_filename + '">点击发送到Aria</button></div>');
-                    $("div.dialog-body", o).append(i);
-                }
-            })), "shareAriaLink" == e.type && (t = e.list, $("div.dialog-header h3 span.dialog-title", o).text(e.title), $.each(e.list, function (e, t) {
-                if (1 != t.isdir) {
-                    var n = aria_download(t.dlink, t.server_filename),
-                        a = $('<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><div style="width:150px;float:left;overflow:hidden;text-overflow:ellipsis" title="' + t.server_filename + '">' + t.server_filename + '</div><span>：</span><a href="javasctipt:void(0)" class="aria2c-link">' + n + "</a></div>");
-                    $("div.dialog-body", o).append(a);
-                }
-            })), e.tip && $("div.dialog-tip p", o).html(e.tip), e.showcopy && ($("div.dialog-button", o).show(), $("div.dialog-button button#dialog-copy-button", o).show()), e.showedit) {
-                $("div.dialog-button", o).show(), $("div.dialog-button button#dialog-edit-button", o).show();
-                var s = $('<textarea name="dialog-textarea" style="display:none;resize:none;width:758px;height:300px;white-space:pre;word-wrap:normal;overflow-x:scroll"></textarea>'),
-                    r = "";
-                "batch" == a.type ? $.each(t, function (e, i) {
-                    "error" != i.downloadlink && (e == t.length - 1 ? r += i.downloadlink : r += i.downloadlink + "\r\n");
-                }) : "link" == a.type && $.each(t, function (e, i) {
-                    "error" != i.url && (e == t.length - 1 ? r += i.url : r += i.url + "\r\n");
-                }), s.val(r), $("div.dialog-body", o).append(s);
-            }
-            l.show(), o.show();
-        }, this.close = function () {
-            e();
-        }, o = function () {
-            var n = document.body.clientWidth, l = n > 800 ? (n - 800) / 2 : 0,
-                s = $('<div class="dialog" style="width: 800px; top: 0px; bottom: auto; left: ' + l + 'px; right: auto; display: hidden; visibility: visible; z-index: 52;"></div>'),
-                r = $('<div class="dialog-header"><h3><span class="dialog-title" style="display:inline-block;width:740px;white-space:nowrap;overflow-x:hidden;text-overflow:ellipsis"></span></h3></div>'),
-                d = $('<div class="dialog-control"><span class="dialog-icon dialog-close">×</span></div>'),
-                c = $('<div class="dialog-body" style="max-height:450px;overflow-y:auto;padding:0 20px;"></div>'),
-                p = $('<div class="dialog-tip" style="padding-left:20px;background-color:#fff;border-top: 1px solid #c4dbfe;color: #dc373c;"><p></p></div>');
-            s.append(r.append(d)).append(c);
-            var u = $('<div class="dialog-button" style="display:none"></div>'),
-                h = $('<div style="display:table;margin:auto"></div>'),
-                f = $('<button id="dialog-copy-button" style="display:none;width: 100px; margin: 5px 0 10px 0; cursor: pointer; background: #cc3235; border: none; height: 30px; color: #fff; border-radius: 3px;">复制全部链接</button>'),
-                v = $('<button id="dialog-edit-button" style="display:none">编辑</button>'),
-                g = $('<button id="dialog-exit-button" style="display:none">退出</button>');
-            return h.append(f).append(v).append(g), u.append(h), s.append(u), f.click(function () {
-                var e = "";
-                "batch" == a.type && $.each(t, function (i, n) {
-                    "error" != n.downloadlink && (i == t.length - 1 ? e += n.downloadlink : e += n.downloadlink + "\r\n");
-                }), "batchAria" == a.type && $.each(t, function (n, a) {
-                    "error" != a.downloadlink && (n == t.length - 1 ? e += aria_download(a.downloadlink, a.filename, y) : e += aria_download(a.downloadlink, a.filename, y) + "\r\n");
-                }), "rpc" == a.type && $.each(t, function (i, n) {
-                    "error" != n.downloadlink && (i == t.length - 1 ? e += n.downloadlink : e += n.downloadlink + "\r\n");
-                }), "shareLink" == a.type && $.each(t, function (i, n) {
-                    "error" != n.dlink && (i == t.length - 1 ? e += n.dlink : e += n.dlink + "\r\n");
-                }), "shareAriaLink" == a.type && $.each(t, function (n, a) {
-                    "error" != a.dlink && (n == t.length - 1 ? e += aria_download(a.dlink, a.server_filename) : e += aria_download(a.dlink, a.server_filename) + "\r\n");
-                }), GM_setClipboard(e, "text"), "" != e ? swal("已将链接复制到剪贴板！") : swal("复制失败，请手动复制！");
-            }), v.click(function () {
-                var e = $("div.dialog-body textarea[name=dialog-textarea]", o);
-                $("div.dialog-body div", o).hide(), f.hide(), v.hide(), e.show(), $dialog_radio_div.show(), g.show();
-            }), g.click(function () {
-                var e = $("div.dialog-body textarea[name=dialog-textarea]", o), t = $("div.dialog-body div", o);
-                e.hide(), $dialog_radio_div.hide(), t.show(), g.hide(), f.show(), v.show();
-            }), s.append(p), $("body").append(s), d.click(e), s;
-        }(), l = function () {
-            var e = $('<div class="dialog-shadow" style="position: fixed; left: 0px; top: 0px; z-index: 50; background: rgb(0, 0, 0) none repeat scroll 0% 0%; opacity: 0.5; width: 100%; height: 100%; display: none;"></div>');
-            return $("body").append(e), e;
-        }();
-    }
-
-    function p(e, t) {
-        function i() {
-            $("#dialog-img", n).attr("src", ""), $("#dialog-err").text(""), n.hide(), a.hide();
-        }
-
-        var n = void 0, a = void 0;
-        this.open = function (e) {
-            e && $("#dialog-img").attr("src", e.img), n.show(), a.show();
-        }, this.close = function () {
-            i();
-        }, n = function () {
-            var n = document.body.clientWidth, a = n > 520 ? (n - 520) / 2 : 0,
-                o = $('<div class="dialog" id="dialog-vcode" style="width:520px;top:0px;bottom:auto;left:' + a + 'px;right:auto;display:none;visibility:visible;z-index:52"></div>'),
-                l = $('<div class="dialog-header"><h3><span class="dialog-header-title"><em class="select-text">提示</em></span></h3></div>'),
-                s = $('<div class="dialog-control"><span class="dialog-icon dialog-close icon icon-close"><span class="sicon">x</span></span></div>'),
-                r = $('<div class="dialog-body"></div>'), d = $('<div style="text-align:center;padding:22px"></div>'),
-                c = $('<div class="download-verify" style="margin-top:10px;padding:0 28px;text-align:left;font-size:12px;"></div>'),
-                p = $('<div class="verify-body">请输入验证码：</div>'),
-                u = $('<input id="dialog-input" type="text" style="padding:3px;width:85px;height:23px;border:1px solid #c6c6c6;background-color:white;vertical-align:middle;" class="input-code" maxlength="4">'),
-                h = $('<img id="dialog-img" class="img-code" style="margin-left:10px;vertical-align:middle;" alt="点击换一张" src="" width="100" height="30">'),
-                f = $('<a href="javascript:;" style="text-decoration:underline;" class="underline">换一张</a>'),
-                v = $('<div id="dialog-err" style="padding-left:84px;height:18px;color:#d80000" class="verify-error"></div>'),
-                g = $('<div class="dialog-footer g-clearfix"></div>'),
-                m = $('<a class="g-button g-button-blue" data-button-id="" data-button-index href="javascript:;" style="padding-left:36px"><span class="g-button-right" style="padding-right:36px;"><span class="text" style="width:auto;">确定</span></span></a>'),
-                w = $('<a class="g-button" data-button-id="" data-button-index href="javascript:;" style="padding-left: 36px;"><span class="g-button-right" style="padding-right: 36px;"><span class="text" style="width: auto;">取消</span></span></a>');
-            return l.append(s), p.append(u).append(h).append(f), c.append(p).append(v), d.append(c), r.append(d), g.append(m).append(w), o.append(l).append(r).append(g), $("body").append(o), s.click(i), h.click(e), f.click(e), u.keypress(function (e) {
-                13 == e.which && t();
-            }), m.click(t), w.click(i), u.click(function () {
-                $("#dialog-err").text("");
-            }), o;
-        }(), a = $("div.dialog-shadow");
-    }
-
-    function u() {
-        function t() {
-            switch (s()) {
-                case"disk":
-                    return void (new a).init();
-                case"share":
-                case"s":
-                    return void (new o).init();
-                default:
-                    return;
-            }
-        }
-
-        function i() {
-            $.ajax({
-                url: "https://api.baiduyun.wiki/update?ver=" + h, method: "GET", success: function (e) {
-                    GM_setValue("lastest_version", e.version), b = e.ua, 200 === e.code && e.version > h && swal({
-                        title: "发现新版本",
-                        text: e.changelog,
-                        buttons: {confirm: {text: "更新", value: "confirm"}}
-                    }).then(function (t) {
-                        "confirm" === t && (location.href = e.updateURL);
-                    }), GM_setValue("init", 1), t();
-                }
-            });
-        }
-
-        function n() {
-            setTimeout(function () {
-                var e = $("." + f.header),
-                    t = $('<span class="cMEMEF" node-type="help-author" style="opacity: .5" ><a href="https://www.baiduyun.wiki/" >教程</a><i class="find-light-icon" style="display: inline;background-color: #009fe8;"></i></span>');
-                e.append(t);
-            }, 8e3);
-        }
-
-        function l() {
-            GM_registerMenuCommand("网盘脚本配置", function () {
-                void 0 === GM_getValue("SETTING_P") && GM_setValue("SETTING_P", !1), void 0 === GM_getValue("SETTING_H") && GM_setValue("SETTING_H", !0);
-                var e = "";
-                GM_getValue("SETTING_P") ? e += '<label style="display:flex;align-items: center;justify-content: space-between;padding-top: 20px;">自动填写提取码(#后面)<input type="checkbox" id="S-P" checked style="width: 16px;height: 16px;"></label>' : e += '<label style="display:flex;align-items: center;justify-content: space-between;padding-top: 20px;">自动填写提取码(#后面)<input type="checkbox" id="S-P" style="width: 16px;height: 16px;"></label>', GM_getValue("SETTING_H") ? e += '<label style="display:flex;align-items: center;justify-content: space-between;padding-top: 20px;">开启教程<input type="checkbox" id="S-H" checked style="width: 16px;height: 16px;"></label>' : e += '<label style="display:flex;align-items: center;justify-content: space-between;padding-top: 20px;">开启教程<input type="checkbox" id="S-H" style="width: 16px;height: 16px;"></label>', e = "<div>" + e + "</div>";
-                var t = $(e);
-                swal({content: t[0]});
-            }), $(document).on("change", "#S-H", function () {
-                GM_setValue("SETTING_H", $(this)[0].checked);
-            }), $(document).on("change", "#S-P", function () {
-                GM_setValue("SETTING_P", $(this)[0].checked);
-            });
-        }
-
-        function r() {
-            f["default-dom"] = $(".icon-upload").parent().parent().parent().parent().parent().attr("class"), f.bar = $(".icon-upload").parent().parent().parent().parent().attr("class");
-            var e = document.createElement("script");
-            e.type = "text/javascript", e.async = !0, e.src = "https://js.users.51.la/19988117.js", document.getElementsByTagName("head")[0].appendChild(e);
-            var t = document.createElement("meta");
-            t.httpEquiv = "Content-Security-Policy", t.content = "upgrade-insecure-requests", document.getElementsByTagName("head")[0].appendChild(t), $(document).on("contextmenu", ".aria2c-link", function (e) {
-                return e.preventDefault(), !1;
-            }), $(document).on("mousedown", ".aria2c-link", function (e) {
-                e.preventDefault();
-                var t = $(this).text();
-                return GM_setClipboard(t, "text"), swal("已将链接复制到剪贴板！请复制到XDown中下载", {timer: 2e3}), !1;
-            }), $(document).on("click", ".home-download", function (e) {
-            }), $(document).on("click", ".share-download", function (e) {
-                e.preventDefault(), e.target.innerText && GM_xmlhttpRequest({
-                    method: "POST",
-                    headers: {"User-Agent": b},
-                    url: e.target.innerText,
-                    onload: function (e) {
-                    }
+              } else {
+                // 其他
+                obj.showDialogUnKnownResponse(response);
+              }
+            } else {
+              if (response.dlink instanceof Array && response.dlink.length) {
+                var dlinkMapping = {};
+                response.dlink.forEach(function (item) {
+                  dlinkMapping[item.fs_id] = item.dlink;
                 });
-            });
+                fileList.forEach(function (item) {
+                  item.dlink = dlinkMapping[item.fs_id];
+                  item.dlinkApi = obj.buildDownloadUrl(
+                    item.path,
+                    item.server_filename
+                  );
+                });
+              } else {
+                fileList.forEach(function (item) {
+                  item.dlink = obj.buildDownloadUrl(
+                    item.path,
+                    item.server_filename
+                  );
+                });
+              }
+              obj.showDownloadLinkFile(fileList);
+            }
+          });
+        } catch (err) {
+          fileList.forEach(function (item) {
+            item.dlink = obj.buildDownloadUrl(item.path, item.server_filename);
+          });
+          obj.showDownloadLinkFile(fileList);
+        }
+      };
+
+      obj.showDownloadLinkFile = function (fileList) {
+        var title = "文件下载";
+        var body =
+          '<div style="padding: 20px 20px;min-height: 120px; max-height: 300px; overflow-y: auto; ">';
+
+        var rowStyle =
+          "display:block; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;";
+        fileList.forEach(function (item, index) {
+          body += '<div style="margin-bottom: 10px;">';
+          body +=
+            "<div>" + (index + 1) + "：" + item.server_filename + "</div>";
+          if (item.dlinkApi) {
+            body +=
+              '<div><a href="' +
+              item.dlink +
+              "&filename=" +
+              encodeURIComponent(item.server_filename) +
+              '" title="' +
+              item.dlink +
+              '" style="' +
+              rowStyle +
+              '">官方：' +
+              item.dlink +
+              "</a></div>";
+            body +=
+              '<div><a href="' +
+              item.dlinkApi +
+              "&filename=" +
+              encodeURIComponent(item.server_filename) +
+              '" title="' +
+              item.dlinkApi +
+              '" style="' +
+              rowStyle +
+              '">直链：' +
+              item.dlinkApi +
+              "</a></div>";
+          } else {
+            body +=
+              '<div><a href="' +
+              item.dlink +
+              "&filename=" +
+              encodeURIComponent(item.server_filename) +
+              '" title="' +
+              item.dlink +
+              '" style="' +
+              rowStyle +
+              '">' +
+              item.dlink +
+              "</a></div>";
+          }
+          body += "</div>";
+        });
+
+        body += "</div>";
+        var footer = obj.renderFooterAppId();
+        obj.showDialog(title, body, footer);
+      };
+
+      obj.showDownloadLinkPack = function (fileList, data) {
+        var title = "文件下载";
+        var body =
+          '<div style="padding: 20px 20px;min-height: 120px; max-height: 300px; overflow-y: auto; ">';
+
+        var packName = obj.getDownloadPackName(fileList);
+        body +=
+          "<div>" +
+          packName +
+          '</div><div><a href="' +
+          data.dlink +
+          "&zipname=" +
+          encodeURIComponent(packName) +
+          '" title="' +
+          data.dlink +
+          '" style="display:block; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">' +
+          data.dlink +
+          "</a></div>";
+
+        body += '<div style="margin-top: 15px;">打包的文件/文件夹列表</div>';
+        fileList.forEach(function (item, index) {
+          body +=
+            '<div title="' +
+            item.path +
+            '" style="color: ' +
+            (item.isdir ? "blue" : "inherit") +
+            ';">[' +
+            (index + 1) +
+            "] " +
+            item.server_filename +
+            "</div>";
+        });
+
+        body += "</div>";
+        var footer = obj.renderFooterAppId();
+        obj.showDialog(title, body, footer);
+      };
+
+      obj.getDownloadPackName = function (fileList) {
+        return (
+          fileList[0].server_filename + " 等" + fileList.length + "个文件.zip"
+        );
+      };
+
+      obj.buildDownloadUrl = function (path, name) {
+        return (
+          "https://pcs.baidu.com/rest/2.0/pcs/file?method=download&app_id=" +
+          obj.getAppId() +
+          "&filename=" +
+          encodeURIComponent(name) +
+          "&path=" +
+          encodeURIComponent(path)
+        );
+      };
+
+      obj.showDownloadSingle = function (fileList, fileStat) {
+        var title = "链接类型";
+        var body =
+          '<div style="padding: 40px 20px; max-height: 300px; overflow-y: auto;">';
+
+        body += '<div class="normalBtnBox g-center">';
+        body +=
+          '<a class="g-button g-button-large g-button-gray-large nd-button-multi" title="调用官方接口生成链接"><span class="g-button-right"><em class="icon icon-download"></em> 官方链接</span></a>';
+        body +=
+          '<a class="g-button g-button-large g-button-gray-large nd-button-disk" style="margin-left:50px;" title="转存文件然后生成文件直链"><span class="g-button-right"><em class="icon icon-save-disk"></em> 转存直链</span></a>';
+        body += "</div>";
+
+        if (fileStat.dir_num) {
+          body +=
+            '<div style="margin-top: 40px; padding-top: 10px; margin-bottom: -20px; border-top: 1px solid #D0DFE7;"><p class="g-center">选择 [多文件] 会过滤当前选中的 <span style="color: red">' +
+            fileStat.dir_num +
+            "</span> 个文件夹</p>";
+
+          var index = 1;
+          fileList.forEach(function (item) {
+            if (item.isdir) {
+              body +=
+                '<p title="' +
+                item.path +
+                '" style="color: blue;">[' +
+                index +
+                "] " +
+                item.server_filename +
+                "</p>";
+              index++;
+            }
+          });
+          body += "</div>";
         }
 
-        e("RPC：", x), this.init = function () {
-            GM_setValue("current_version", h), r(), i(), GM_getValue("SETTING_H") && n(), l();
-        };
-    }
+        body += "</div>";
+        var footer = obj.renderFooterAppId();
+        obj.showDialog(title, body, footer);
+      };
 
-    var h = "1.0", f = {
-            list: "zJMtAEb",
-            grid: "fyQgAEb",
-            "list-grid-switch": "auiaQNyn",
-            "list-switched-on": "ewXm1e",
-            "grid-switched-on": "kxhkX2Em",
-            "list-switch": "rvpXm63",
-            "grid-switch": "mxgdJgwv",
-            checkbox: "EOGexf",
-            "col-item": "Qxyfvg",
-            check: "fydGNC",
-            checked: "EzubGg",
-            "chekbox-grid": "cEefyz",
-            "list-view": "vdAfKMb",
-            "item-active": "kfkl8zR8",
-            "grid-view": "JKvHJMb",
-            "bar-search": "OFaPaO",
-            "list-tools": "tcuLAu",
-            header: "vyQHNyb"
-        }, v = {
-            dir: "提示：不支持整个文件夹下载，可进入文件夹内获取文件链接下载",
-            unlogin: "提示：登录百度网盘后才能使用此功能哦!!!",
-            fail: "提示：获取下载链接失败！请刷新网页后重试！",
-            unselected: "提示：请勾选要下载的文件，若已勾选请重新勾选",
-            morethan: "提示：多个文件请点击【显示链接】",
-            toobig: "提示：只支持300M以下的文件夹，若链接无法下载，请进入文件夹后勾选文件获取！"
-        }, g = 250528, m = GM_getValue("secretCode") ? GM_getValue("secretCode") : g,
-        w = GM_getValue("savePath") ? GM_getValue("savePath") : "/PanHelper", b = "", y = navigator.userAgent, x = {
-            domain: GM_getValue("rpcDomain") ? GM_getValue("rpcDomain") : "http://localhost",
-            port: GM_getValue("rpcPort") ? GM_getValue("rpcPort") : 6800,
-            token: GM_getValue("rpcToken") ? GM_getValue("rpcToken") : "",
-            dir: GM_getValue("rpcDir") ? GM_getValue("rpcDir") : "D:/"
+      obj.showDownloadSelect = function (fileList, fileStat) {
+        var title = "链接类型";
+        var body =
+          '<div style="padding: 40px 20px; max-height: 300px; overflow-y: auto;">';
+
+        body += '<div class="normalBtnBox g-center">';
+        if (obj.isHomePage()) {
+          body +=
+            '<a class="g-button g-button-large g-button-gray-large nd-button-disk" title="合并官方链接和文件直链"><span class="g-button-right"><em class="icon icon-save-disk"></em> 多文件</span></a>';
+        } else {
+          body +=
+            '<a class="g-button g-button-large g-button-gray-large nd-button-multi"><span class="g-button-right" title="调用官方接口生成文件链接"><em class="icon icon-download"></em> 官方多文件</span></a>';
+          body +=
+            '<a class="g-button g-button-large g-button-gray-large nd-button-disk" style="margin-left:50px;" title="转存文件然后生成文件直链"><span class="g-button-right"><em class="icon icon-save-disk"></em> 转存多文件</span></a>';
+        }
+        body +=
+          '<a class="g-button g-button-large g-button-gray-large nd-button-pack" style="margin-left:50px;" title="调用官方接口生成压缩包链接"><span class="g-button-right"><em class="icon icon-poly"></em> 压缩包</span></a>';
+        body += "</div>";
+
+        if (fileStat.dir_num) {
+          body +=
+            '<div style="margin-top: 40px; padding-top: 10px; margin-bottom: -20px; border-top: 1px solid #D0DFE7;"><p class="g-center">选择 [多文件] 会过滤当前选中的 <span style="color: red">' +
+            fileStat.dir_num +
+            "</span> 个文件夹</p>";
+          var index = 1;
+          fileList.forEach(function (item) {
+            if (item.isdir) {
+              body +=
+                '<p title="' +
+                item.path +
+                '" style="color: blue;">[' +
+                index +
+                "] " +
+                item.server_filename +
+                "</p>";
+              index++;
+            }
+          });
+          body += "</div>";
+        }
+
+        body += "</div>";
+        var footer = obj.renderFooterAppId();
+        obj.showDialog(title, body, footer);
+      };
+
+      obj.showAppIdChange = function () {
+        var title = "应用ID";
+        var body =
+          '<div style="padding: 60px 20px; max-height: 300px; overflow-y: auto;"><div class="g-center" style="margin-bottom: 10px;">当前应用ID：<input type="text" class="nd-input-app-id" style="border: 1px solid #f2f2f2; padding: 4px 5px;" value="' +
+          obj.getAppId() +
+          '"></div><div class="g-center"><p>用于构造个人网盘文件的下载直链，更多应用ID请查看<a target="_blank" href="http://go.newday.me/s/pan-script"> 脚本主页 </a></p></div></div>';
+        var footer = "";
+        obj.showDialog(title, body, footer);
+      };
+
+      obj.showDialogUnKnownResponse = function (response) {
+        var title = "未知结果";
+        var body =
+          '<div style="padding: 20px 20px; max-height: 300px; overflow-y: auto;"><pre style="white-space: pre-wrap; word-wrap: break-word; word-break: break-all;">' +
+          JSON.stringify(response, null, 4) +
+          "</pre></div>";
+        var footer = obj.renderFooterAppId();
+        obj.showDialog(title, body, footer);
+      };
+
+      obj.renderFooterAppId = function () {
+        return '<p>其他页面：<a class="nd-open-page-temp" href="javascript:;">临时文件</a></p>';
+      };
+
+      obj.showDialog = function (title, body, footer) {
+        var dialog = obj
+          .require("system-core:system/uiService/dialog/dialog.js")
+          .verify({
+            title: title,
+            img: "img",
+            vcode: "vcode",
+          });
+
+        // 内容
+        $(dialog.$dialog).find(".dialog-body").safeHtml(body);
+
+        // 底部
+        $(dialog.$dialog).find(".dialog-footer").safeHtml(footer);
+
+        dialog.show();
+      };
+
+      obj.showTipSuccess = function (msg, hasClose, autoClose) {
+        obj.showTip("success", msg, hasClose, autoClose);
+      };
+
+      obj.showTipError = function (msg, hasClose, autoClose) {
+        obj.showTip("failure", msg, hasClose, autoClose);
+      };
+
+      obj.showTipLoading = function (msg, hasClose, autoClose) {
+        obj.showTip("loading", msg, hasClose, autoClose);
+      };
+
+      obj.showTip = function (mode, msg, hasClose, autoClose) {
+        var option = {
+          mode: mode,
+          msg: msg,
         };
-    $(function () {
-        (new u).init();
+
+        // 关闭按钮
+        if (typeof hasClose != "undefined") {
+          option.hasClose = hasClose;
+        }
+
+        // 自动关闭
+        if (typeof autoClose != "undefined") {
+          option.autoClose = autoClose;
+        }
+
+        obj.require("system-core:system/uiService/tip/tip.js").show(option);
+      };
+
+      obj.hideTip = function () {
+        obj.require("system-core:system/uiService/tip/tip.js").hide({
+          hideTipsAnimationFlag: 1,
+        });
+      };
+
+      obj.isHomePage = function () {
+        var url = router.getUrl();
+        if (url.indexOf(".baidu.com/disk") > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      obj.isTimelinePage = function () {
+        var url = router.getUrl();
+        if (url.indexOf(".baidu.com/disk/timeline") > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      obj.isSharePageMulti = function () {
+        var yunData = obj.getYunData();
+        if (yunData.SHAREPAGETYPE == "single_file_page") {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      obj.getSelectedFileList = function () {
+        if (obj.isHomePage()) {
+          return obj.getSelectedFileListHome();
+        } else {
+          return obj.getSelectedFileListShare();
+        }
+      };
+
+      obj.getSelectedFileListHome = function () {
+        if (obj.isTimelinePage()) {
+          return obj.require("pan-timeline:widget/store/index.js").getters
+            .getChoosedItemArr;
+        } else {
+          return obj
+            .require("system-core:context/context.js")
+            .instanceForSystem.list.getSelected();
+        }
+      };
+
+      obj.getSelectedFileListShare = function () {
+        return obj
+          .require("system-core:context/context.js")
+          .instanceForSystem.list.getSelected();
+      };
+
+      obj.getFileListStat = function (fileList) {
+        var fileStat = {
+          file_num: 0,
+          dir_num: 0,
+        };
+        fileList.forEach(function (item) {
+          if (item.isdir == 0) {
+            fileStat.file_num++;
+          } else {
+            fileStat.dir_num++;
+          }
+        });
+        return fileStat;
+      };
+
+      obj.filterFileListDir = function (fileList) {
+        var fileListFilter = [];
+        fileList.forEach(function (item) {
+          if (item.isdir == 0) {
+            fileListFilter.push(item);
+          }
+        });
+        return fileListFilter;
+      };
+
+      obj.parseFidList = function (fileList) {
+        var fidList = [];
+        fileList.forEach(function (item) {
+          fidList.push(item.fs_id);
+        });
+        return fidList;
+      };
+
+      obj.getDownloadShare = function (fileList, pack, callback) {
+        obj.showTipLoading("生成链接中，请稍等...");
+        obj.initWidgetContext("function-widget-1:download/util/context.js");
+        obj.async(
+          "function-widget-1:download/service/dlinkService.js",
+          function (dl) {
+            var yunData = obj.getYunData();
+            var data = {
+              list: fileList,
+              share_uk: yunData.SHARE_UK,
+              share_id: yunData.SHARE_ID,
+              sign: yunData.SIGN,
+              timestamp: yunData.TIMESTAMP,
+              type: pack ? "batch" : "nolimit",
+            };
+            dl.getDlinkShare(data, callback);
+          }
+        );
+      };
+
+      obj.getDownloadHome = function (fileList, pack, callback) {
+        obj.showTipLoading("生成链接中，请稍等...");
+        obj.initWidgetContext("function-widget-1:download/util/context.js");
+        obj.async(
+          "function-widget-1:download/service/dlinkService.js",
+          function (dl) {
+            var fidList = obj.parseFidList(fileList);
+            var type = pack ? "batch" : "nolimit";
+            dl.getDlinkPan(JSON.stringify(fidList), type, callback);
+          }
+        );
+      };
+
+      obj.applyTransferFile = function (fileList, path, callback) {
+        obj.listDir(path, function (response) {
+          if (response && response.errno == 0) {
+            obj.transferFile(fileList, path, callback);
+          } else if (response) {
+            obj.createDir(path, function (response) {
+              if (response && response.errno == 0) {
+                obj.transferFile(fileList, response.path, callback);
+              } else {
+                callback && callback("");
+              }
+            });
+          } else {
+            callback && callback("");
+          }
+        });
+      };
+
+      obj.transferFile = function (fileList, path, callback) {
+        var yunData = obj.getYunData();
+        var fidList = obj.parseFidList(fileList);
+        var url =
+          "/share/transfer?ondup=newcopy&async=1&shareid=" +
+          yunData.SHARE_ID +
+          "&from=" +
+          yunData.SHARE_UK;
+        var data = {
+          fsidlist: "[" + fidList.join(",") + "]",
+          path: path,
+        };
+        obj.ajax({
+          type: "post",
+          url: url,
+          data: data,
+          dataType: "json",
+          timeout: 1e5,
+          error: function () {
+            callback && callback("");
+          },
+          success: function (response) {
+            callback && callback(response);
+          },
+        });
+      };
+
+      obj.listDir = function (path, callback) {
+        var url = "/api/list";
+        obj.ajax({
+          type: "get",
+          url: url,
+          data: {
+            order: "name",
+            desc: 0,
+            showempty: 0,
+            web: 1,
+            page: 1,
+            num: 10,
+            dir: path,
+          },
+          dataType: "json",
+          timeout: 1e5,
+          error: function () {
+            callback && callback("");
+          },
+          success: function (response) {
+            callback && callback(response);
+          },
+        });
+      };
+
+      obj.createDir = function (path, callback) {
+        var url = "/api/create?a=commit";
+        obj.ajax({
+          type: "post",
+          url: url,
+          data: {
+            path: path,
+            isdir: 1,
+            block_list: "[]",
+          },
+          dataType: "json",
+          timeout: 1e5,
+          error: function () {
+            callback && callback("");
+          },
+          success: function (response) {
+            callback && callback(response);
+          },
+        });
+      };
+
+      obj.getShareId = function () {
+        var match;
+
+        match = location.href.match(/share\/init\?surl=([a-z0-9-_]+)/i);
+        if (match) {
+          return match[1];
+        }
+
+        match = location.pathname.match(/\/s\/1([a-z0-9-_]+)/i);
+        if (match) {
+          return match[1];
+        }
+
+        return null;
+      };
+
+      obj.isPwdShareOpen = function () {
+        return option.isOptionActive(option.constant.baidu_share_status);
+      };
+
+      obj.getYunData = function () {
+        if (!obj.yun_data) {
+          obj.yun_data = unsafeWindow.yunData;
+        }
+        return obj.yun_data;
+      };
+
+      obj.getTempPath = function () {
+        var tempPath = config.getConfig("temp_path");
+        if (tempPath) {
+          return tempPath;
+        } else {
+          return obj.temp_path;
+        }
+      };
+
+      obj.setTempPath = function (tempPath) {
+        config.setConfig("temp_path", tempPath);
+      };
+
+      obj.getAppId = function () {
+        var appId = config.getConfig("app_id");
+        if (appId) {
+          return appId;
+        } else {
+          return obj.app_id;
+        }
+      };
+
+      obj.initWidgetContext = function (name) {
+        try {
+          obj.async(name, function (widget) {
+            widget.setContext(obj.getSystemContext());
+          });
+        } catch (err) {}
+      };
+
+      obj.ajax = function (option) {
+        obj.getJquery().ajax(option);
+      };
+
+      obj.getSystemContext = function () {
+        return obj.require("system-core:context/context.js").instanceForSystem;
+      };
+
+      obj.getJquery = function () {
+        return obj.require("base:widget/libs/jquerypacket.js");
+      };
+
+      obj.require = function (name) {
+        return unsafeWindow.require(name);
+      };
+
+      obj.async = function (name, callback) {
+        unsafeWindow.require.async(name, callback);
+      };
+
+      return obj;
+    }
+  );
+
+  container.define("app_manage", ["meta", "unsafeWindow"], function (
+    meta,
+    unsafeWindow
+  ) {
+    var obj = {};
+
+    obj.run = function () {
+      if (meta.existMeta("manage")) {
+        unsafeWindow.OnePan = container;
+        return true;
+      }
+    };
+
+    return obj;
+  });
+
+  container.define("app", ["appRunner"], function (appRunner) {
+    var obj = {};
+
+    obj.run = function () {
+      appRunner.run([
+        {
+          name: "app_baidu",
+          matchs: ["baidu.com"],
+        },
+      ]);
+    };
+
+    return obj;
+  });
+
+  /** lib **/
+  container.define("$", [], function () {
+    return window.$;
+  });
+  container.define("Snap", [], function () {
+    if (typeof Snap != "undefined") {
+      return Snap;
+    } else {
+      return window.Snap;
+    }
+  });
+  container.define("DOMPurify", [], function () {
+    if (typeof DOMPurify != "undefined") {
+      return DOMPurify;
+    } else {
+      return window.DOMPurify;
+    }
+  });
+
+  container.use(["gm", "core", "app"], function (gm, core, app) {
+    gm.ready(function () {
+      core.ready(app.run);
     });
-}();
+  });
+})();
